@@ -213,8 +213,9 @@ const AssessmentCard = (props: IAssessmentCardProps) => {
               component={Link}
               to={hasML ? `${item.id}/insights` : ""}
               sx={{
-                backgroundColor: "#2e7d72",
-                background: `#01221e`,
+                // backgroundColor: "#2e7d72",
+                background: "primary",
+                color: "#EDF4FC"
               }}
               data-cy="view-insights-btn"
             >

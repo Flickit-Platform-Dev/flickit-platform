@@ -153,7 +153,7 @@ const SpaceCard = (props: ISpaceCardProps) => {
               alignSelf: "stretch",
               pl: 2,
               pr: { xs: 0.5, sm: 2 },
-              color: (t) => t.palette.primary.dark,
+              color: (t) => t.palette.primary.main,
             }}
           >
             {loading ? <CircularProgress size="20px" /> : <>{title}</>}

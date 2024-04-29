@@ -249,7 +249,7 @@ export const QuestionCard = (props: IQuestionCardProps) => {
                       }}
                       icon={
                         <RadioButtonCheckedRoundedIcon
-                          sx={{ mx: 0.25, color: "#42a5f5" }}
+                          sx={{ mx: 0.25, color:"#1CC2C4" }}
                           fontSize="inherit"
                         />
                       }
@@ -525,7 +525,7 @@ const AnswerTemplate = (props: {
       >
         <LoadingButton
           variant="contained"
-          color={"info"}
+          color={"primary"}
           loading={isSubmitting}
           disabled={(value || notApplicable) && !selcetedConfidenceLevel}
           sx={
@@ -542,16 +542,16 @@ const AnswerTemplate = (props: {
         </LoadingButton>
         {may_not_be_applicable && (
           <FormControlLabel
-            sx={{ color: "#0288d1" }}
+            sx={{ color: "#1CC2C4" }}
             data-cy="automatic-submit-check"
             control={
               <Checkbox
                 checked={notApplicable}
                 onChange={(e) => notApplicableonChanhe(e)}
                 sx={{
-                  color: "#0288d1",
+                  color: "#1CC2C4",
                   "&.Mui-checked": {
-                    color: "#0288d1",
+                    color: "#1CC2C4",
                   },
                 }}
               />

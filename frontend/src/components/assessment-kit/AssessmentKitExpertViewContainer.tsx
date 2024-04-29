@@ -599,6 +599,7 @@ const AssessmentKitQuestionsList = (props: {
   const [selectedTabIndex, setSelectedTabIndex] = useState("");
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
+    console.log(  attributesDetails?.questions_on_levels)
     setSelectedTabIndex(
       attributesDetails?.questions_on_levels.findIndex(
         (obj: any) => obj.id === newValue

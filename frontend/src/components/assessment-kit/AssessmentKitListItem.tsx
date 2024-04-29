@@ -50,7 +50,7 @@ const AssessmentKitListItem = (props: IAssessmentKitListItemProps) => {
             ...styles.centerCV,
 
             textDecoration: "none",
-            color: (t) => t.palette.primary.dark,
+            color: (t) => t.palette.primary.main,
           }}
           alignSelf="stretch"
           component={Link}

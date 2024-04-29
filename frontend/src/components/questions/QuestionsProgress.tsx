@@ -112,6 +112,7 @@ export const QuestionProgressItem = (props: any) => {
         zIndex: 1,
         height: "20px",
         cursor: questionIndex != question.index ? "pointer" : "auto",
+
         backgroundColor: (t: any) =>
           question.answer || question.is_not_applicable
             ? `${t.palette.primary.main}`
@@ -121,7 +122,7 @@ export const QuestionProgressItem = (props: any) => {
           `${
             question.answer || question.is_not_applicable
               ? t.palette.primary.main
-              : "#a7caed"
+              : "#D2F3F3"
           } solid 5px`,
         transition: "background-color .3s ease, transform .2s ease",
         borderRadius: "8px",
@@ -144,8 +145,10 @@ export const QuestionProgressItem = (props: any) => {
             lineHeight: "13px",
             fontFamily: "Roboto",
             opacity: question.index == questionIndex ? 1 : 0.6,
-            color:
-              question.answer || question.is_not_applicable ? `white` : "gray",
+            color: (t: any) =>
+              question.answer || question.is_not_applicable
+                ? "white"
+                : `${t.palette.primary.main}`,
             transition: "opacity .1s ease",
           }}
           className="i-p-i-n"

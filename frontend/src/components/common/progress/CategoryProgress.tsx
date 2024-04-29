@@ -47,7 +47,7 @@ const QuestionnaireProgress = (props: IQuestionnaireProgress) => {
         {isQuestionnaire && isSmallScreen ? (
           <QANumberIndicator q={q} a={a} />
         ) : (
-          <Typography fontWeight={"bold"} textTransform="uppercase" color={progressToColorMapColor[progress] || "#1976d2"}>
+          <Typography fontWeight={"bold"} textTransform="uppercase" color={progressToColorMapColor[progress] || "#1CC2C4"}>
             <Trans i18nKey={progressToLabelMap[progress] || "inprogress"} />
           </Typography>
         )}

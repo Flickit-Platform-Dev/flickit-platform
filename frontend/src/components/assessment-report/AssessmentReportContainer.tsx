@@ -148,7 +148,7 @@ const AssessmentReportContainer = () => {
                         component={Link}
                         to={`/assessment-kits/${assessment_kit?.id}`}
                         sx={{
-                          color: (t) => t.palette.primary.dark,
+                          color: (t) => t.palette.primary.main,
                           textDecoration: "none",
                           ml: 0.5,
                         }}

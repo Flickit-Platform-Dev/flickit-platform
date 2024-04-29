@@ -50,9 +50,27 @@ declare module "@mui/material/Typography" {
 }
 
 const palette = createPalette({
-  background: { secondary: "#273248", secondaryDark: "#121d33" },
+  background: { secondary: "#EDF4FC", secondaryDark: "#121d33" },
   ml: { primary: "#6035A1" },
   cl: { primary: "#3596A1" },
+  primary: {
+    main: "#1CC2C4",
+    light:"#EDFCFC",
+    dark:"#117476",
+    contrastText:"#fff"
+  },
+  error:{
+    main: "#D81E5B",
+  },
+  secondary:{
+    main: "#F9A03F",
+  },
+  warning:{
+    main: "#F9A03F",
+  },
+  info:{
+    main: "#0A2342",
+  }
 });
 
 export const theme = createTheme({
@@ -112,7 +130,7 @@ export const theme = createTheme({
           scroll-behavior: smooth;
         }
         body {
-          background: #f5f5f5;
+          background: #EDF4FC;
         }
       `,
     },
@@ -123,6 +141,11 @@ export const theme = createTheme({
           subMedium: "h6",
           subLarge: "h6",
         },
+      },
+    },
+    MuiButtonGroup: {
+      defaultProps: {
+       color:"primary"
       },
     },
     MuiTabs: {
@@ -156,7 +179,7 @@ export const theme = createTheme({
         },
       },
     },
-    
+
     //@ts-expect-error
     MuiTabPanel: {
       styleOverrides: {

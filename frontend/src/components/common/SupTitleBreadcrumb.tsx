@@ -40,7 +40,7 @@ const SupTitleBreadcrumb = (props: ISupTitleBreadcrumbProps & BreadcrumbsProps) 
                 fontWeight: "bold",
                 opacity: 0.8,
                 letterSpacing: "0.085em",
-                color: rest?.color ? rest.color : disabled ? "GrayText" : "primary.dark",
+                color: rest?.color ? rest.color : disabled ? "GrayText" : "primary.main",
               }}
             >
               {icon}
