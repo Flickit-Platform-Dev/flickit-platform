@@ -193,7 +193,8 @@ const Navbar = () => {
             }}
             to={`/spaces/1`}
           >
-            <NavLogo />
+            {/* <NavLogo /> */}
+            <img src={import.meta.env.VITE_APP_LOGO_URL}/>
           </Typography>
           <Box sx={{ display: { xs: "none", md: "block" }, ml: 3 }}>
             <SpacesButton />

@@ -44,7 +44,8 @@ export const SpaceMembers = (props: any) => {
     service: (args, config) => service.fetchSpaceMembers({ spaceId }, config),
   });
   const spaceMembersInviteeQueryData = useQuery<IMemberModel>({
-    service: (args, config) => service.fetchSpaceMembersInvitees({ spaceId }, config),
+    service: (args, config) =>
+      service.fetchSpaceMembersInvitees({ spaceId }, config),
   });
   const dialogProps = useDialog();
   const {
@@ -151,9 +152,7 @@ export const SpaceMembers = (props: any) => {
             <Box sx={{ ...styles.centerV, opacity: 0.8, mb: "auto" }}>
               <PeopleOutlineRoundedIcon sx={{ mr: 0.5 }} fontSize="small" />
               <Typography fontFamily="Roboto" fontWeight={"bold"}>
-                {
-                  spaceMembersQueryData?.data?.items?.length
-                }
+                {spaceMembersQueryData?.data?.items?.length}
               </Typography>
             </Box>
           }
@@ -182,9 +181,9 @@ export const SpaceMembers = (props: any) => {
             return (
               <Box>
                 {items.map((member: any) => {
-                  const { displayName, id , pictureLink, isOwner } = member;
+                  const { displayName, id, pictureLink, isOwner } = member;
                   return (
-                      displayName && (
+                    displayName && (
                       <Box
                         key={id}
                         sx={{
@@ -199,10 +198,10 @@ export const SpaceMembers = (props: any) => {
                         <Box sx={{ ...styles.centerV }}>
                           <Box>
                             <Avatar
-                                    {...stringAvatar(displayName.toUpperCase())}
-                                    src={pictureLink}
-                                    sx={{ width: 34, height: 34 }}>
-                            </Avatar>
+                              {...stringAvatar(displayName.toUpperCase())}
+                              src={pictureLink}
+                              sx={{ width: 34, height: 34 }}
+                            ></Avatar>
                           </Box>
                           <Box ml={2}>{displayName}</Box>
                         </Box>
@@ -231,114 +230,123 @@ export const SpaceMembers = (props: any) => {
           }}
         />
         <QueryData
-            {...spaceMembersInviteeQueryData}
-            renderLoading={() => {
-              return (
-                  <>
-                    {[1, 2, 3, 4, 5].map((item) => {
-                      return (
-                          <Skeleton
-                              key={item}
-                              variant="rectangular"
-                              sx={{ borderRadius: 2, height: "50px", mb: 1 }}
-                          />
-                      );
-                    })}
-                  </>
-              );
-            }}
-            render={(data) => {
-              const { items } = data;
-              return (
-                  <Box>
-                    {items.length > 0 && (
-                        <Box mt={4}>
-                          <Title
-                              size="small"
-                              titleProps={{
-                                textTransform: "none",
-                                fontSize: ".95rem",
-                                fontFamily: "Roboto",
-                              }}
+          {...spaceMembersInviteeQueryData}
+          renderLoading={() => {
+            return (
+              <>
+                {[1, 2, 3, 4, 5].map((item) => {
+                  return (
+                    <Skeleton
+                      key={item}
+                      variant="rectangular"
+                      sx={{ borderRadius: 2, height: "50px", mb: 1 }}
+                    />
+                  );
+                })}
+              </>
+            );
+          }}
+          render={(data) => {
+            const { items } = data;
+            return (
+              <Box>
+                {items.length > 0 && (
+                  <Box mt={4}>
+                    <Title
+                      size="small"
+                      titleProps={{
+                        textTransform: "none",
+                        fontSize: ".95rem",
+                        fontFamily: "Roboto",
+                      }}
+                    >
+                      <Trans i18nKey="invitees" />
+                    </Title>
+                    <Box mt={1}>
+                      {items.map((invitees: any) => {
+                        const {
+                          createdBy,
+                          creationTime,
+                          id,
+                          email,
+                          expirationDate,
+                        } = invitees;
+
+                        const expirationDateTime = new Date(
+                          expirationDate
+                        ).getTime();
+                        const timeNow = new Date().getTime();
+
+                        const name = email;
+                        const isOwner = userId == id;
+
+                        return (
+                          <Box
+                            key={id}
+                            sx={{
+                              ...styles.centerV,
+                              boxShadow: 1,
+                              borderRadius: 2,
+                              flexDirection: { xs: "column", sm: "row" },
+                              my: 1,
+                              py: 0.8,
+                              px: 1.5,
+                            }}
                           >
-                            <Trans i18nKey="invitees" />
-                          </Title>
-                          <Box mt={1}>
-                            {items.map((invitees: any) => {
-                              const {
-                                createdBy,
-                                creationTime,
-                                id,
-                                email,
-                                expirationDate,
-                              } = invitees;
-
-                              const expirationDateTime = new Date(expirationDate).getTime()
-                              const timeNow =  new Date().getTime()
-
-                              const name = email;
-                              const isOwner = userId == id;
-
-                              return (
-                                      <Box
-                                          key={id}
-                                          sx={{
-                                            ...styles.centerV,
-                                            boxShadow: 1,
-                                            borderRadius: 2,
-                                            flexDirection:{xs:"column",sm:"row"},
-                                            my: 1,
-                                            py: 0.8,
-                                            px: 1.5,
-                                          }}
-                                      >
-                                        <Box sx={{ ...styles.centerV,mr:{xs:"auto",sm:"0px"} }}>
-                                          <Box>
-                                            <Avatar sx={{ width: 34, height: 34 }}>
-                                              <PersonRoundedIcon />
-                                            </Avatar>
-                                          </Box>
-                                          <Box ml={2}>{name}</Box>
-                                        </Box>
-                                        <Box ml="auto" sx={{ ...styles.centerV }}>
-                                          <Box
-                                              sx={{
-                                                ...styles.centerV,
-                                                opacity: 0.8,
-                                                px: 0.4,
-                                                mr: 2,
-                                              }}
-                                          >
-                                            <EventBusyRoundedIcon
-                                                fontSize="small"
-                                                sx={{ mr: 0.5 }}
-                                            />
-                                            <Typography variant="body2">
-                                              {formatDate(expirationDate)}
-                                            </Typography>
-                                          </Box>
-                                          {
-                                            <Actions
-                                                isOwner={isOwner}
-                                                member={invitees}
-                                                fetchSpaceMembers={
-                                                  spaceMembersInviteeQueryData.query
-                                                }
-                                                isInvitationExpired={expirationDateTime <= timeNow }
-                                                isInvitees={true}
-                                                email={email}
-                                            />
-                                          }
-                                        </Box>
-                                      </Box>
-                                  )
-                            })}
+                            <Box
+                              sx={{
+                                ...styles.centerV,
+                                mr: { xs: "auto", sm: "0px" },
+                              }}
+                            >
+                              <Box>
+                                <Avatar sx={{ width: 34, height: 34 }}>
+                                  <PersonRoundedIcon />
+                                </Avatar>
+                              </Box>
+                              <Box ml={2}>{name}</Box>
+                            </Box>
+                            <Box ml="auto" sx={{ ...styles.centerV }}>
+                              <Box
+                                sx={{
+                                  ...styles.centerV,
+                                  opacity: 0.8,
+                                  px: 0.4,
+                                  mr: 2,
+                                }}
+                              >
+                                <EventBusyRoundedIcon
+                                  fontSize="small"
+                                  sx={{ mr: 0.5 }}
+                                />
+                                <Typography variant="body2">
+                                  {formatDate(expirationDate)}
+                                </Typography>
+                              </Box>
+                              {
+                                <Actions
+                                  isOwner={isOwner}
+                                  member={invitees}
+                                  fetchSpaceMembers={
+                                    spaceMembersInviteeQueryData.query
+                                  }
+                                  isInvitationExpired={
+                                    expirationDateTime <= timeNow
+                                  }
+                                  isInvitees={true}
+                                  email={email}
+                                />
+                              }
+                            </Box>
                           </Box>
-                        </Box>
-                    )}
+                        );
+                      })}
+                    </Box>
                   </Box>
-              );
-            }}
+                )}
+              </Box>
+            );
+          }}
         />
       </Box>
       <InviteSpaceMemberDialog
@@ -379,8 +387,14 @@ const AddMemberButton = ({ loading }: { loading: boolean }) => {
 };
 
 const Actions = (props: any) => {
-  const { isOwner, member, fetchSpaceMembers, isInvitees, isInvitationExpired, email } =
-    props;
+  const {
+    isOwner,
+    member,
+    fetchSpaceMembers,
+    isInvitees,
+    isInvitationExpired,
+    email,
+  } = props;
   const { spaceId = "" } = useParams();
   const { service } = useServiceContext();
   const { query: deleteSpaceMember, loading } = useQuery({
@@ -432,11 +446,12 @@ const Actions = (props: any) => {
           text: <Trans i18nKey="cancelInvitation" />,
           onClick: deleteItem,
         },
-        !isInvitees && !isOwner && {
-          icon: <DeleteRoundedIcon fontSize="small" />,
-          text: <Trans i18nKey="remove" />,
-          onClick: deleteItem,
-        },
+        !isInvitees &&
+          !isOwner && {
+            icon: <DeleteRoundedIcon fontSize="small" />,
+            text: <Trans i18nKey="remove" />,
+            onClick: deleteItem,
+          },
       ]}
     />
   );
@@ -449,7 +464,12 @@ const InviteSpaceMemberDialog = (
     resetForm: () => void;
   } & IDialogProps
 ) => {
-  const { spaceMembersQueryData,spaceMembersInviteeQueryData, resetForm, ...rest } = props;
+  const {
+    spaceMembersQueryData,
+    spaceMembersInviteeQueryData,
+    resetForm,
+    ...rest
+  } = props;
   const { spaceId } = useParams();
   const { service } = useServiceContext();
   const { query: inviteMemberQuery, loading } = useQuery({
@@ -465,7 +485,7 @@ const InviteSpaceMemberDialog = (
       resetForm();
       rest.onClose();
       spaceMembersQueryData.query();
-      spaceMembersInviteeQueryData.query()
+      spaceMembersInviteeQueryData.query();
     } catch (e) {
       toastError(e as ICustomError);
     }
@@ -481,7 +501,10 @@ const InviteSpaceMemberDialog = (
       <Typography>
         <Trans
           i18nKey="emailIsNotOnFlickitYet"
-          values={{ email: rest.context?.data?.email || "This user" }}
+          values={{
+            email: rest.context?.data?.email || "This user",
+            title: import.meta.env.VITE_APP_TITLE,
+          }}
         />{" "}
         <Trans i18nKey={"wouldYouLikeToInviteThemToJoin"} />
       </Typography>
