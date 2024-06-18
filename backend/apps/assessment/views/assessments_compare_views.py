@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from assessment.services import assessments_compare_services
+from assessment.services.compare import compare
 
 
 class AssessmentsCompareApi(APIView):
@@ -17,5 +17,5 @@ class AssessmentsCompareApi(APIView):
 
     @swagger_auto_schema(manual_parameters=[assessment_id])
     def post(self, request):
-        result = assessments_compare_services.get_assessments_compare_service(request)
+        result = compare.assessments_compare_service(request)
         return Response(data=result["body"], status=result["status_code"])
