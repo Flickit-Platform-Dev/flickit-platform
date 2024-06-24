@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import SpaceSettingContainer from "@components/spaces/SpaceSettingContainer";
+import SpaceSettingContainer from "@components/spaces/space-setting/spaceSettingContainer";
 import useDocumentTitle from "@utils/useDocumentTitle";
 
 const SpaceSettingScreen = () => {
