@@ -3,24 +3,20 @@ import Title from "@common/TitleComponent";
 import SupTitleBreadcrumb from "@/components/common/SupTitleBreadcrumb";
 import { useParams } from "react-router-dom";
 
-interface IAssessmentAccessManagementTitle {
-  pathInfo: {
-      space: {
-          id: number,
-          title: string
-      },
-      assessment: {
-          id: string,
-          title: string
-      }
+interface ISpaceTitle {
+    spaceInfo: {
+      assessmentsCount: number
+      code: string
+      editable: boolean
+      id: number
+      lastModificationTime: string
+      membersCount: number
+      title: string
   };
 }
 
-const SpaceSettingTitle = (props: IAssessmentAccessManagementTitle) => {
-  const { pathInfo } = props;
-  const { spaceId, page } = useParams();
-  const { space, assessment } = pathInfo;
-
+const SpaceSettingTitle = (props: any) => {
+  const {spaceInfo} = props
   return (
     <Title
       backLink="/"
@@ -34,11 +30,7 @@ const SpaceSettingTitle = (props: IAssessmentAccessManagementTitle) => {
         <SupTitleBreadcrumb
           routes={[
             {
-              title: space?.title,
-              to: `/${spaceId}/assessments/${page}`,
-            },
-            {
-              title: assessment?.title,
+              title: spaceInfo?.title,
             },
           ]}
           displayChip

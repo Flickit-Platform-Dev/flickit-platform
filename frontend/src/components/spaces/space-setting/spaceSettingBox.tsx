@@ -35,10 +35,9 @@ import {SelectHeight} from "@utils/selectHeight";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 
-
-export const SpaceSettingGeneralBox = (props:{AssessmentInfo: any ,AssessmentTitle: string,fetchPathInfo: ()=> void, color: any}) => {
-    const {AssessmentInfo, AssessmentTitle, fetchPathInfo, color} = props
-    const { createdBy:{displayName},creationTime,lastModificationTime,kit} = AssessmentInfo
+export const SpaceSettingGeneralBox = (props:{AssessmentTitle: string,fetchPathInfo: ()=> void}) => {
+    const { AssessmentTitle, fetchPathInfo} = props
+    // const { createdBy:{displayName},creationTime,lastModificationTime,kit} = AssessmentInfo
 
    const title = ["creator","created","lastModified","assessmentKit"]
    const formMethods = useForm({ shouldUnregister: true });
@@ -96,7 +95,6 @@ export const SpaceSettingGeneralBox = (props:{AssessmentInfo: any ,AssessmentTit
                                 data={AssessmentTitle}
                                 infoQuery={fetchPathInfo}
                                 editable={true}
-                                color={color}
                             />
                         </Box>
                     </Grid>
@@ -116,49 +114,49 @@ export const SpaceSettingGeneralBox = (props:{AssessmentInfo: any ,AssessmentTit
                       }}
                 >
 
-                    {title && title.map((itemList: string,index: number) =>{
-                        return (
-                            <Grid item
-                                  sx={{display: "flex", justifyContent: "center"}}
-                            ><Grid item
-                                   xs={12}
-                                   sm={12}
-                                   md={8}
+                    {/*{title && title.map((itemList: string,index: number) =>{*/}
+                    {/*    return (*/}
+                    {/*        <Grid item*/}
+                    {/*              sx={{display: "flex", justifyContent: "center"}}*/}
+                    {/*        ><Grid item*/}
+                    {/*               xs={12}*/}
+                    {/*               sm={12}*/}
+                    {/*               md={8}*/}
 
-                                   sx={{
-                                       display: "flex",
-                                       justifyContent: "space-between",
-                                       alignItems: 'center',
-                                   }}
-                            >
-                                <Typography color="#9DA7B3" fontWeight={500}
-                                            whiteSpace={"nowrap"}
-                                            sx={{
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                fontSize: {xs: "1rem", md: "1.375rem"},
-                                            }}
-                                            lineHeight={"normal"}>
-                                    <Trans i18nKey={`${itemList}`}/>:
-                                </Typography>
+                    {/*               sx={{*/}
+                    {/*                   display: "flex",*/}
+                    {/*                   justifyContent: "space-between",*/}
+                    {/*                   alignItems: 'center',*/}
+                    {/*               }}*/}
+                    {/*        >*/}
+                    {/*            <Typography color="#9DA7B3" fontWeight={500}*/}
+                    {/*                        whiteSpace={"nowrap"}*/}
+                    {/*                        sx={{*/}
+                    {/*                            display: "flex",*/}
+                    {/*                            justifyContent: "center",*/}
+                    {/*                            fontSize: {xs: "1rem", md: "1.375rem"},*/}
+                    {/*                        }}*/}
+                    {/*                        lineHeight={"normal"}>*/}
+                    {/*                <Trans i18nKey={`${itemList}`}/>:*/}
+                    {/*            </Typography>*/}
 
-                                <Typography color="#0A2342" fontWeight={500}
-                                            sx={{
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                fontSize: {xs: "1rem", md: "1.375rem"},
-                                                width:{md: "350px"}
-                                            }}
-                                            lineHeight={"normal"}>
-                                    {index == 0 && displayName}
-                                    {index == 1 && formatDate(creationTime)}
-                                    {index == 2 && formatDate(lastModificationTime)}
-                                    {index == 3 && <Link style={{textDecoration:"none", color:"inherit"}} to={`/assessment-kits/${kit.id}`} >{kit.title}</Link>}
-                                </Typography>
-                            </Grid>
-                            </Grid>
-                        )
-                    })}
+                    {/*            <Typography color="#0A2342" fontWeight={500}*/}
+                    {/*                        sx={{*/}
+                    {/*                            display: "flex",*/}
+                    {/*                            justifyContent: "center",*/}
+                    {/*                            fontSize: {xs: "1rem", md: "1.375rem"},*/}
+                    {/*                            width:{md: "350px"}*/}
+                    {/*                        }}*/}
+                    {/*                        lineHeight={"normal"}>*/}
+                    {/*                {index == 0 && displayName}*/}
+                    {/*                {index == 1 && formatDate(creationTime)}*/}
+                    {/*                {index == 2 && formatDate(lastModificationTime)}*/}
+                    {/*                {index == 3 && <Link style={{textDecoration:"none", color:"inherit"}} to={`/assessment-kits/${kit.id}`} >{kit.title}</Link>}*/}
+                    {/*            </Typography>*/}
+                    {/*        </Grid>*/}
+                    {/*        </Grid>*/}
+                    {/*    )*/}
+                    {/*})}*/}
                 </Grid>
             </Box>
         </Box>
@@ -167,16 +165,16 @@ export const SpaceSettingGeneralBox = (props:{AssessmentInfo: any ,AssessmentTit
 
 
 export const SpaceSettingMemberBox = (props: {
-    listOfRoles: any[],
-    listOfUser: any[],
-    fetchAssessmentsUserListRoles: () => void,
+    listOfMember: any[],
+    listOfInviteed: any[],
+    fetchAssessmentsUserListRoles?: () => void,
     openModal: () => void,
     openRemoveModal: (id: string,name: string) => void,
     setChangeData?: any
 }) => {
     const {service} = useServiceContext();
     const {assessmentId = ""} = useParams();
-    const {listOfRoles = [], listOfUser, fetchAssessmentsUserListRoles,
+    const { listOfMember, listOfInviteed , fetchAssessmentsUserListRoles,
         setChangeData, openModal, openRemoveModal} = props
 
     // const [page, setPage] = React.useState(0);
@@ -199,8 +197,8 @@ export const SpaceSettingMemberBox = (props: {
 
     const columns: readonly Column[] = [
         {id: 'displayName', label: 'Name', minWidth: "20vw", position: "left"},
-        {id: 'email', label: 'Email', minWidth: "20vw", display: "none",position: "center"},
-        {id: 'role', label: 'Role', align: 'right', minWidth: "20vw",position: "center"}
+        {id: 'email', label: 'Email', minWidth: "20vw",position: "center"},
+        // {id: 'role', label: 'Role', align: 'right', minWidth: "20vw",position: "center"}
     ];
 
 
@@ -305,10 +303,10 @@ export const SpaceSettingMemberBox = (props: {
                                             sx={{
                                                 minWidth:{xs:"8.1rem",sm: "12rem", md: column.minWidth} ,
                                                 textAlign: {xs:column.position, lg: "center"},
-                                                display:{xs:column.display,md:"inline-block",
+                                                display:"inline-block",
                                                 color: "#9DA7B3",
                                                 border: "none", fontSize: "1rem"
-                                                }
+
                                             }}
                                         >
                                             {column.label}
@@ -318,7 +316,7 @@ export const SpaceSettingMemberBox = (props: {
                                 <Divider sx={{width: "100%"}}/>
                             </TableHead>
                             <TableBody>
-                                {listOfUser.length > 0 && listOfUser
+                                {listOfMember?.length > 0 && listOfMember
                                     // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row: any) => {
                                         return (
@@ -343,7 +341,7 @@ export const SpaceSettingMemberBox = (props: {
                                                                 {...stringAvatar(row.displayName.toUpperCase())}
                                                                 src={row.pictureLink}
                                                                 sx={{width: 40, height: 40,
-                                                                    display: {xs: "none",sm:"flex"}
+                                                                    display: {xs: "flex"}
                                                                 }}
                                                             ></Avatar>
                                                             <Typography
@@ -358,7 +356,7 @@ export const SpaceSettingMemberBox = (props: {
                                                         </Box>
                                                     </Box>
                                                     <Box
-                                                    sx={{display:{xs: "none",md: "flex"}, justifyContent: "center", width: {xs:"5rem",md: "20vw"}
+                                                    sx={{display:{xs: "flex"}, justifyContent: "center", width: {xs:"5rem",md: "20vw"}
                                                     }}
                                                     >
                                                         <Typography
@@ -370,129 +368,10 @@ export const SpaceSettingMemberBox = (props: {
                                                         </Typography>
                                                     </Box>
                                                     <Box
-                                                    sx={{display: "flex" ,justifyContent: "flex-end",alignItems: "center" ,
-                                                        gap:{xs:"0px",md:".7rem" } ,width: {xs:"10.1rem",md: "20vw"}
+                                                    sx={{display: "flex" ,justifyContent: "center",alignItems: "center" ,
+                                                        gap:{xs:"0px",md:".7rem" } ,width: {xs:"4.1rem"}
                                                     }}
                                                     >
-                                                        <FormControl
-                                                        sx={{
-                                                            m: 1,
-                                                            width: '100%',
-                                                            textAlign: "center",
-                                                            padding : "6px, 12px, 6px, 12px",
-                                                            display: "inline-flex",
-                                                            justifyContent: "center",
-                                                            alignItems: "center"
-                                                        }}
-                                                        >
-                                                            {/*<Grid item lg={8} sx={{minWidth: {xs: "100%", md: "12vw", lg:"10vw", xl: "160px"}}} >*/}
-                                                            <Grid item lg={8} sx={{minWidth: {xs: "100%", md: "160px"}}} >
-                                                                <Select
-                                                                    labelId="demo-multiple-name-label"
-                                                                    id="demo-multiple-name"
-                                                                    value={row?.role?.title}
-                                                                    onChange={handleChange}
-                                                                    name={row}
-                                                                    MenuProps={MenuProps}
-                                                                    sx={{
-                                                                        width:"100%",
-                                                                        boxShadow: 'none',
-                                                                        '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                                                                        border:"1px solid #2974B4",
-                                                                        fontSize: "0.875rem",
-                                                                        borderRadius: "0.5rem",
-                                                                        "&.MuiOutlinedInput-notchedOutline": { border: 0 },
-                                                                        "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
-                                                                            {
-                                                                                border: 0,
-                                                                            },
-                                                                        "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                                                            {
-                                                                                border: 0,
-                                                                            },
-                                                                        '.MuiSvgIcon-root': {
-                                                                            fill: "#2974B4 !important",
-                                                                        },
-                                                                        "& .MuiSelect-select": {
-                                                                            padding: "4px 5px"
-                                                                        }
-                                                                    }}
-                                                                    IconComponent={KeyboardArrowDownIcon}
-                                                                    inputProps={{
-                                                                        renderValue: () => (row?.role?.title),
-                                                                    }}
-                                                                >
-                                                                    <Box
-                                                                        sx={{
-                                                                            paddingY: "16px",
-                                                                            color: '#9DA7B3',
-                                                                            textAlign: "center",
-                                                                            borderBottom: "1px solid #9DA7B3",
-                                                                        }}
-                                                                    >
-                                                                        <Typography
-                                                                            sx={{fontSize:"0.875rem"}}
-                                                                        ><Trans i18nKey={"chooseARole"} /></Typography>
-                                                                    </Box>
-                                                                    {listOfRoles && listOfRoles.map((role: any,index: number) => (
-                                                                        <MenuItem
-                                                                            style={{display: "block"}}
-                                                                            key={role.title}
-                                                                            value={role}
-                                                                            sx={{paddingY: "0px", maxHeight: "200px",
-                                                                                ...(role.id === row.role.id && {
-                                                                                    backgroundColor: "#9CCAFF",
-                                                                                }),
-                                                                                "&.MuiMenuItem-root:hover":{
-                                                                                    ...(role.id === row.role.id ? {
-                                                                                        backgroundColor: "#9CCAFF",
-                                                                                        color:"#004F83"
-                                                                                    } : {backgroundColor: '#EFEDF0',
-                                                                                        color:"#1B1B1E"
-                                                                                    }),
-
-                                                                                },
-                                                                            }}
-                                                                        >
-                                                                            <Box
-                                                                                sx={{maxWidth: "240px",
-                                                                                    color: "#000",
-                                                                                    fontSize: "0.875rem",
-                                                                                    lineHeight: "21px",
-                                                                                    fontWeight: 500,
-                                                                                    paddingY: "1rem",
-                                                                                }}
-                                                                            >
-                                                                                <Typography
-                                                                                    sx={{fontSize: '0.875rem',
-                                                                                        ...(role.id === row.role.id ? {
-                                                                                            color:"#004F83"
-                                                                                        } : {
-                                                                                            color:"#1B1B1E"
-                                                                                        }),
-                                                                                    }}
-                                                                                >{role.title}</Typography>
-
-                                                                           <div style={{
-                                                                               color: "#000",
-                                                                               fontSize: "0.875rem",
-                                                                               lineHeight: "21px",
-                                                                               fontWeight: 300,
-                                                                               whiteSpace: "break-spaces",
-                                                                               paddingTop: "1rem"
-                                                                           }}>{role.description}</div>
-
-                                                                            </Box>
-                                                                            {listOfRoles && listOfRoles.length > index + 1 && <Box sx={{
-                                                                                height: '0.5px', width: "80%",
-                                                                                backgroundColor: "#9DA7B3",
-                                                                                mx: "auto"
-                                                                            }}></Box>}
-                                                                        </MenuItem>
-                                                                    ))}
-                                                                </Select>
-                                                            </Grid>
-                                                        </FormControl>
                                                         <Box
                                                             onClick={() => openRemoveModal(row.displayName, row.id)}
                                                         >
@@ -525,7 +404,7 @@ const OnHoverInputTitleSetting = (props: any) => {
     const handleMouseOut = () => {
         setIsHovering(false);
     };
-    const {data, editable, infoQuery, formMethods,color} = props;
+    const {data, editable, infoQuery, formMethods} = props;
     const [hasError, setHasError] = useState<boolean>(false);
     const [error, setError] = useState<any>({});
     const [inputData, setInputData] = useState<string>(data);
@@ -535,24 +414,23 @@ const OnHoverInputTitleSetting = (props: any) => {
         setError({});
         setHasError(false);
     };
-    const {assessmentId} = useParams();
+    const {spaceId} = useParams();
     const {service} = useServiceContext();
-    const updateAssessmentQuery = useQuery({
+    const updateSpaceQuery = useQuery({
         service: (
             args = {
-                id: assessmentId,
-                data: {title: inputData,
-                       colorId: color?.id || 6
+                spaceId,
+                data: {title: inputData
                 },
             },
             config
-        ) => service.updateAssessment(args, config),
+        ) => service.updateSpace(args, config),
         runOnMount: false,
         // toastError: true,
     });
     const updateAssessmentTitle = async () => {
         try {
-            const res = await updateAssessmentQuery.query();
+            const res = await updateSpaceQuery.query();
             res.message && toast.success(res.message);
             await infoQuery();
         } catch (e) {

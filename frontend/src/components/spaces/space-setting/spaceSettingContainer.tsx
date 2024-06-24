@@ -6,7 +6,7 @@ import {useLocation, useParams} from "react-router-dom";
 import LoadingSkeletonOfAssessmentRoles from "@common/loadings/LoadingSkeletonOfAssessmentRoles";
 import {Trans} from "react-i18next";
 import {styles} from "@styles";
-import {RolesType} from "@types";
+import {IMemberModel, ISpaceModel, RolesType} from "@types";
 import {
     SpaceSettingGeneralBox,
     SpaceSettingMemberBox
@@ -22,44 +22,34 @@ import SpaceSettingTitle from "./spaceSettingTitle";
 
 const SpaceSettingContainer = () => {
     const {service} = useServiceContext();
-    const {assessmentId = ""} = useParams();
+    const { spaceId = "" } = useParams();
     const [expanded, setExpanded] = useState<boolean>(false);
     const [expandedRemoveModal, setExpandedRemoveModal] = useState<{display: boolean,name: string, id: string}>({display:false,name:"", id:""});
-    const [listOfUser,setListOfUser] = useState([])
+    const [listOfMember,setListOfMember] = useState([])
+    const [listOfInviteed,setListOfInviteed] = useState([])
     const [changeData,setChangeData] = useState(false)
 
-    const { state } = useLocation();
-    const fetchAssessmentsRoles = useQuery<RolesType>({
-        service: (args, config) =>
-            service.fetchAssessmentsRoles(args, config),
-        toastError: false,
-        toastErrorOptions: {filterByStatus: [404]},
+
+    const fetchSpace = useQuery<ISpaceModel>({
+        service: (args, config) => service.fetchSpace({ spaceId }, config),
     });
 
-    const fetchAssessmentsUserListRoles = useQuery({
-        service: (args = {assessmentId}, config) =>
-            service.fetchAssessmentsUserListRoles(args, config),
-        toastError: false,
-        toastErrorOptions: {filterByStatus: [404]},
-    });
-    const fetchPathInfo = useQuery({
-        service: (args, config) =>
-            service.fetchPathInfo({assessmentId, ...(args || {})}, config),
-        runOnMount: true,
+    const spaceMembersQueryData = useQuery<IMemberModel>({
+        service: (args, config) => service.fetchSpaceMembers({ spaceId }, config),
     });
 
-    const AssessmentInfo = useQuery({
-        service: (args = {assessmentId}, config) =>
-            service.AssessmentsLoad(args, config),
-        toastError: false,
-        toastErrorOptions: {filterByStatus: [404]},
+    const spaceMembersInviteeQueryData = useQuery<IMemberModel>({
+        service: (args, config) =>
+            service.fetchSpaceMembersInvitees({ spaceId }, config),
     });
 
     useEffect(()=>{
      (
          async ()=>{
-             const {items} = await fetchAssessmentsUserListRoles.query()
-             setListOfUser(items)
+             const {items : MemberItems} = await spaceMembersQueryData.query()
+             const {items : InviteedItems} = await spaceMembersInviteeQueryData.query()
+             setListOfMember(MemberItems)
+             setListOfInviteed(InviteedItems)
          }
      )()
     },[changeData])
@@ -83,19 +73,15 @@ const SpaceSettingContainer = () => {
     return (
         <QueryBatchData
             queryBatchData={[
-                fetchPathInfo,
-                fetchAssessmentsRoles,
-                AssessmentInfo
+                fetchSpace,
             ]}
             renderLoading={() => <LoadingSkeletonOfAssessmentRoles/>}
-            render={([pathInfo = {},roles = {}, assessmentInfo = {}]) => {
-                const {space, assessment: {title}} = pathInfo;
-                const {items: listOfRoles} = roles;
-
+            render={([spaceInfo]) => {
+                const {title} = spaceInfo
                 return (
                     <Box m="auto" pb={3} sx={{px: {lg: 14, xs: 2, sm: 3}}}>
                         <SpaceSettingTitle
-                            pathInfo={pathInfo}
+                            spaceInfo = {spaceInfo}
                         />
                         <Grid container columns={12} mt={3} mb={5}>
                             <Grid item sm={12} xs={12}>
@@ -106,7 +92,7 @@ const SpaceSettingContainer = () => {
                                 >
                                     <Typography color="#004F83"
                                                 sx={{fontSize:{xs:"2.125rem",sm:"3.5rem"}}} fontWeight={900}>
-                                        <Trans i18nKey="assessmentSettings"/>
+                                        <Trans i18nKey="spaceSettings"/>
                                     </Typography>
                                 </Box>
                             </Grid>
@@ -114,46 +100,42 @@ const SpaceSettingContainer = () => {
                         <Grid container columns={12} mb={"32px"}>
                             <Grid item sm={12} xs={12}>
                                 <SpaceSettingGeneralBox
-                                    AssessmentInfo={assessmentInfo}
                                     AssessmentTitle={title}
-                                    fetchPathInfo={fetchPathInfo.query}
-                                    color={state}
+                                    fetchPathInfo={fetchSpace.query}
                                 />
                             </Grid>
                         </Grid>
                         <Grid container columns={12}>
                             <Grid item sm={12} xs={12}>
                                 <SpaceSettingMemberBox
-                                    listOfRoles={listOfRoles}
-                                    listOfUser={listOfUser}
-                                    fetchAssessmentsUserListRoles={fetchAssessmentsUserListRoles.query}
+                                    listOfMember={listOfMember}
+                                    listOfInviteed={listOfInviteed}
+                                    // fetchAssessmentsUserListRoles={fetchAssessmentsUserListRoles.query}
                                     openModal={handleClickOpen}
                                     openRemoveModal={ handleOpenRemoveModal}
                                     setChangeData={setChangeData}
                                 />
-
                             </Grid>
                         </Grid>
-                        <AddMemberDialog
-                            expanded={expanded}
-                            onClose={handleClose}
-                            listOfRoles={listOfRoles}
-                            listOfUser={listOfUser}
-                            assessmentId={assessmentId}
-                            fetchAssessmentsUserListRoles={fetchAssessmentsUserListRoles.query}
-                            title={<Trans i18nKey={"addNewMember"}/>}
-                            cancelText={<Trans i18nKey={"cancel"}/>}
-                            confirmText={<Trans i18nKey={"addToThisAssessment"}/>}
-                            setChangeData={setChangeData}
-                        />
-                        <ConfirmRemoveMemberDialog
-                            expandedRemoveDialog={expandedRemoveModal}
-                            onCloseRemoveDialog={handleCloseRemoveModal}
-                            assessmentId={assessmentId}
-                            fetchAssessmentsUserListRoles={fetchAssessmentsUserListRoles.query}
-                            assessmentName ={title}
-                            setChangeData={setChangeData}
-                        />
+                        {/*<AddMemberDialog*/}
+                        {/*    expanded={expanded}*/}
+                        {/*    onClose={handleClose}*/}
+                        {/*    listOfUser={listOfUser}*/}
+                        {/*    assessmentId={assessmentId}*/}
+                        {/*    // fetchAssessmentsUserListRoles={fetchAssessmentsUserListRoles.query}*/}
+                        {/*    title={<Trans i18nKey={"addNewMember"}/>}*/}
+                        {/*    cancelText={<Trans i18nKey={"cancel"}/>}*/}
+                        {/*    confirmText={<Trans i18nKey={"addToThisAssessment"}/>}*/}
+                        {/*    setChangeData={setChangeData}*/}
+                        {/*/>*/}
+                        {/*<ConfirmRemoveMemberDialog*/}
+                        {/*    expandedRemoveDialog={expandedRemoveModal}*/}
+                        {/*    onCloseRemoveDialog={handleCloseRemoveModal}*/}
+                        {/*    assessmentId={assessmentId}*/}
+                        {/*    // fetchAssessmentsUserListRoles={fetchAssessmentsUserListRoles.query}*/}
+                        {/*    assessmentName ={title}*/}
+                        {/*    setChangeData={setChangeData}*/}
+                        {/*/>*/}
                     </Box>
                 );
             }}
