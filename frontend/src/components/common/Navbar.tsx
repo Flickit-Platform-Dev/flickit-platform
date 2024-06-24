@@ -57,7 +57,7 @@ const Navbar = () => {
     try {
       const res = await fetchPathInfo.query();
       dispatch(authActions.setCurrentSpace(res?.space));
-    } catch (e) {}
+    } catch (e) { }
   };
   useEffect(() => {
     if (spaceId) {
@@ -200,7 +200,7 @@ const Navbar = () => {
             }}
             to={`/spaces/1`}
           >
-            <img src={config.appLogoUrl} alt={"logo"} />
+            <img src={config.appLogoUrl} alt={"logo"} style={{ maxHeight: "-webkit-fill-available" }} />
           </Typography>
           <Box sx={{ display: { xs: "none", md: "block" }, ml: 3 }}>
             <SpacesButton />
