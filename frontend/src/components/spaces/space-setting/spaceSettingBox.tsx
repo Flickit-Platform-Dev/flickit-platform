@@ -302,6 +302,7 @@ export const SpaceSettingMemberBox = (props: {
                                             align={column.align}
                                             sx={{
                                                 minWidth:{xs:"8.1rem",sm: "12rem", md: column.minWidth} ,
+                                                paddingRight: column.id == "email" ? "4rem" : "",
                                                 textAlign: {xs:column.position, lg: "center"},
                                                 display:"inline-block",
                                                 color: "#9DA7B3",
@@ -328,11 +329,11 @@ export const SpaceSettingMemberBox = (props: {
                                                         justifyContent: "center",
                                                         alignItems: "center",
                                                         border: "none",
-                                                        gap: {xs:"0px",md:"1.3rem"},
+                                                        gap: {xs:"10px",md:"1.3rem"},
                                                         paddingX: {xs:"0px",md:"1rem"}
                                                     }}
                                                 >
-                                                    <Box sx={{width: {xs:"6rem",sm: "15rem", md: "20vw"}}}>
+                                                    <Box sx={{width: {xs:"8rem",sm: "15rem", md: "20vw"}}}>
                                                         <Box
                                                             sx={{
                                                                 display: "flex" ,justifyContent: {xs:"flex-start"},alignItems: "center" ,gap: ".5rem",paddingLeft: {lg:"45%"}
@@ -356,7 +357,7 @@ export const SpaceSettingMemberBox = (props: {
                                                         </Box>
                                                     </Box>
                                                     <Box
-                                                    sx={{display:{xs: "flex"}, justifyContent: "center", width: {xs:"5rem",md: "20vw"}
+                                                    sx={{display:{xs: "flex"}, justifyContent: "center", width: {xs:"8rem",md: "20vw"}
                                                     }}
                                                     >
                                                         <Typography
