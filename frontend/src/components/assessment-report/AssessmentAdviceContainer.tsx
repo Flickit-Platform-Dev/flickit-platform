@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import AdviceSlider from "../common/AdviceSlider";
 import Box from "@mui/material/Box";
-import { Button, Divider, IconButton } from "@mui/material";
+import { Button, Divider, Grid, IconButton } from "@mui/material";
 import EmptyAdvice from "@assets/img/emptyAdvice.gif";
 import BetaSvg from "@assets/svg/beta.svg";
 import Dialog from "@mui/material/Dialog";
@@ -17,8 +17,9 @@ import { ICustomError } from "@utils/CustomError";
 import languageDetector from "@utils/languageDetector";
 import { LoadingButton } from "@mui/lab";
 import useScreenResize from "@utils/useScreenResize";
+import { customFontFamily } from "@/config/theme";
 const AssessmentAdviceContainer = (props: any) => {
-  const { subjects } = props;
+  const { subjects, assessment } = props;
   const [expanded, setExpanded] = useState<boolean>(false);
   const [adviceResult, setAdviceResult] = useState<any>();
   const { assessmentId } = useParams();
@@ -53,7 +54,7 @@ const AssessmentAdviceContainer = (props: any) => {
       }
     } catch (e) {
       const err = e as ICustomError;
-      toastError(err.response.data.message);
+      toastError(err);
     }
   };
   const [subjectData, setsubjectData] = useState<any>([]);
@@ -64,16 +65,6 @@ const AssessmentAdviceContainer = (props: any) => {
   const fullScreen = useScreenResize("sm");
   return (
     <div>
-      <Box mt={4}>
-        <Title
-          borderBottom={true}
-          sx={{ borderBottomColor: "#000" }}
-          inPageLink="advice"
-        >
-          <Trans i18nKey="advice" />
-        </Title>
-      </Box>
-
       <Dialog
         open={expanded}
         onClose={handleClose}
@@ -82,7 +73,7 @@ const AssessmentAdviceContainer = (props: any) => {
         fullWidth
         sx={{
           ".MuiDialog-paper": {
-            borderRadius: {xs:0,sm:"32px"},
+            borderRadius: { xs: 0, sm: "32px" },
           },
           ".MuiDialog-paper::-webkit-scrollbar": {
             display: "none",
@@ -94,7 +85,7 @@ const AssessmentAdviceContainer = (props: any) => {
         <DialogContent
           sx={{
             padding: "0!important",
-            background: "#1CC2C4",
+            background: "#004F83",
             overflowX: "hidden",
           }}
         >
@@ -109,11 +100,11 @@ const AssessmentAdviceContainer = (props: any) => {
           >
             <Box
               sx={{
-                background: "#1CC2C4",
+                background: "#004F83",
                 py: 4,
                 textAlign: "center",
                 color: "#fff",
-                fontSize: "32px",
+                fontSize: "2rem",
                 fontWeight: "700",
                 borderRadius: "32px 32px 0 0",
               }}
@@ -132,16 +123,17 @@ const AssessmentAdviceContainer = (props: any) => {
               <Box
                 sx={{
                   color: "#6C7B8E",
-                  fontSize: "16px",
+                  fontSize: "1rem",
                   fontWeight: "500",
                   display: "flex",
                   textAlign: "center",
-                  width: {xs:"100%",sm:"50%"},
+                  width: { xs: "100%", sm: "50%" },
                   py: 2,
                 }}
               >
                 <Trans i18nKey="wichAttYouWant" />
               </Box>
+              {/*
               <Box
                 sx={{
                   display: "flex",
@@ -176,12 +168,13 @@ const AssessmentAdviceContainer = (props: any) => {
                         textAlign: "center",
                       }}
                     >
-                      {/* <Box sx={{ fontSize: "16px", fontWeight: "700" }}>
+                      <Box sx={{             fontSize: "1rem",
+, fontWeight: "700" }}>
                         {subject.title}
-                      </Box> */}
-                      {/* <Divider sx={{ my: 2 }} /> */}
+                      </Box> 
+                       <Divider sx={{ my: 2 }} /> 
                       <Box>
-                        {/* <FormGroup>
+                         <FormGroup>
                           {subjectData.map((subject: any) => {
                             subject?.attributes.map((attribute: any) => {
                               return (
@@ -191,7 +184,7 @@ const AssessmentAdviceContainer = (props: any) => {
                                       sx={{
                                         color: "#0A2342",
                                         "&.Mui-checked": {
-                                          color: "#1CC2C4",
+                                          color: "#004F83",
                                         },
                                       }}
                                     />
@@ -201,25 +194,30 @@ const AssessmentAdviceContainer = (props: any) => {
                               );
                             });
                           })}
-                        </FormGroup> */}
+                        </FormGroup> 
                       </Box>
                     </Box>
                   );
                 })}
               </Box>
+*/}
             </Box>
             <Box
-              sx={{ borderRadius: {xs:0,sm:"0 0 32px 32px"}, background: "#fff", py: 8 }}
+              sx={{
+                borderRadius: { xs: 0, sm: "0 0 32px 32px" },
+                background: "#fff",
+                py: 8,
+              }}
             >
-              {subjectData.map((subject: any) =>
+              {subjects.map((subject: any) =>
                 subject?.attributes.map((attribute: any) => (
                   <AdviceSlider
                     key={attribute.id}
-                    defaultValue={attribute?.maturity_level?.value || 0}
-                    currentState={attribute?.maturity_level}
+                    defaultValue={attribute?.maturityLevel?.value || 0}
+                    currentState={attribute?.maturityLevel}
                     attribute={attribute}
-                    subject={subject?.subject}
-                    maturityLevels={attribute?.maturity_scores}
+                    subject={subject}
+                    maturityLevels={assessment?.assessmentKit?.maturityLevels}
                     target={target}
                     setTarget={setTarget}
                   />
@@ -231,11 +229,11 @@ const AssessmentAdviceContainer = (props: any) => {
               >
                 <Button
                   sx={{
-                    color: "#1CC2C4",
+                    color: "#004F83",
                     px: 2,
                     py: 1,
                     borderRadius: "16px",
-                    fontSize: "16px",
+                    fontSize: "1rem",
                     fontWeight: "700",
                     width: "fit-content",
                     mr: 2,
@@ -247,12 +245,12 @@ const AssessmentAdviceContainer = (props: any) => {
 
                 <LoadingButton
                   sx={{
-                    background: "#1CC2C4",
+                    background: "#004F83",
                     color: "#EDFCFC",
                     px: 2,
                     py: 1,
                     borderRadius: "16px",
-                    fontSize: "16px",
+                    fontSize: "1rem",
                     fontWeight: "700",
                     width: "fit-content",
                     "&:hover": {
@@ -275,17 +273,17 @@ const AssessmentAdviceContainer = (props: any) => {
         <Box
           sx={{
             borderRadius: "24px",
-            border:  `${adviceResult ? "none" : "1px solid #9DA7B3 "}`,
-            width: {xs:"100%",sm:"60%"},
+            border: `${adviceResult ? "none" : "1px solid #9DA7B3 "}`,
+            width: { xs: "100%", sm: "60%" },
             p: 6,
             margin: "0 auto",
           }}
         >
           <Box
             sx={{
-              fontSize: "64px",
+              fontSize: "4rem",
               fontWeight: "700",
-              color: "#1CC2C4",
+              color: "#004F83",
               textShadow: "0px 0px 11.2px rgba(28, 194, 196, 0.50)",
               textAlign: "center",
               display: "flex",
@@ -301,7 +299,7 @@ const AssessmentAdviceContainer = (props: any) => {
 
           <Box
             sx={{
-              fontSize: "16px",
+              fontSize: "1rem",
               fontWeight: "400",
               color: "#0A2342",
               margin: "0 auto",
@@ -327,12 +325,12 @@ const AssessmentAdviceContainer = (props: any) => {
           >
             <Button
               sx={{
-                background: "#1CC2C4",
+                background: "#004F83",
                 color: "#EDFCFC",
                 px: 5,
                 py: 1,
                 borderRadius: "16px",
-                fontSize: "16px",
+                fontSize: "1rem",
                 fontWeight: "700",
                 width: "fit-content",
                 "&:hover": {
@@ -349,11 +347,11 @@ const AssessmentAdviceContainer = (props: any) => {
           <>
             <Box
               sx={{
-                fontSize: "32px",
+                fontSize: "2rem",
                 fontWeight: "700",
                 color: "#0A2342",
                 textShadow: "0px 0px 11.2px rgba(10, 35, 66, 0.30)",
-                textAlign: "center",
+                textAlign: "left",
                 display: "flex",
                 justifyContent: "center",
                 mb: 6,
@@ -385,82 +383,46 @@ const AssessmentAdviceContainer = (props: any) => {
             </Box>
 
             {/* list header */}
-            <Box
+            <Grid
+              container
+              spacing={2}
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
                 mb: 4,
-                // direction: isFarsi ? "rtl" : "ltr",
+                textAlign: "center",
+                fontWeight: "700",
+                color: "#9DA7B3",
               }}
             >
-              <Box
-                sx={{
-                  fontSize: "16px",
-                  color: "#9DA7B3",
-                  fontWeight: "700",
-                  textAlign: "center",
-                  width: "5%",
-                }}
-              >
-                <Trans i18nKey="number" />
-              </Box>
-              <Box
-                sx={{
-                  width: "40%",
-                  fontSize: "16px",
-                  color: "#9DA7B3",
-                  fontWeight: "700",
-                  textAlign: "center",
-                }}
-              >
+              <Grid item xs={1} md={1}>
+                <Trans i18nKey="index" />
+              </Grid>
+              <Grid item xs={5} md={3}>
                 <Trans i18nKey="question" />
-              </Box>
-              <Box
-                sx={{
-                  width: "10%",
-                  fontSize: "16px",
-                  color: "#9DA7B3",
-                  fontWeight: "700",
-                  textAlign: "center",
-                }}
-              >
+              </Grid>
+              <Grid item xs={2} md={2}>
                 <Trans i18nKey="whatIsNow" />
-              </Box>
-              <Box
-                sx={{
-                  width: "10%",
-                  fontSize: "16px",
-                  color: "#9DA7B3",
-                  fontWeight: "700",
-                  textAlign: "center",
-                }}
-              >
+              </Grid>
+              <Grid item xs={2} md={2}>
                 <Trans i18nKey="whatShouldBe" />
-              </Box>
-              <Box
-                sx={{
-                  width: "15%",
-                  fontSize: "16px",
-                  color: "#9DA7B3",
-                  fontWeight: "700",
-                  textAlign: "center",
-                }}
-              >
+              </Grid>
+              <Grid item xs={2} md={2}>
                 <Trans i18nKey="targetedAttributes" />
-              </Box>
-              <Box
+              </Grid>
+              <Grid
+                item
+                xs={0}
+                md={2}
                 sx={{
-                  width: "10%",
-                  fontSize: "16px",
-                  color: "#9DA7B3",
-                  fontWeight: "700",
-                  textAlign: "center",
+                  display: {
+                    md: "block",
+                    xs: "none",
+                  },
                 }}
               >
                 <Trans i18nKey="questionnaire" />
-              </Box>
-            </Box>
+              </Grid>
+            </Grid>
+
             {/* list item */}
             <>
               {adviceResult.map((item: any, index: number) => {
@@ -472,114 +434,121 @@ const AssessmentAdviceContainer = (props: any) => {
                   questionnaire,
                 } = item;
                 return (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-
-                      fontFamily: `${isFarsi ? "Vazirmatn" : "Roboto"}`,
-                    }}
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{ alignItems: "center", mb: 2 }}
                   >
-                    <Box
+                    <Grid
+                      item
+                      xs={1}
+                      md={1}
                       sx={{
-                        fontSize: "64px",
-                        color: "#1CC2C4",
+                        textAlign: "center",
                         fontWeight: "700",
-                        width: "fit-content",
+                        color: "#004F83",
                       }}
                     >
                       {index + 1}
-                    </Box>
-                    <Box
+                    </Grid>
+                    <Grid
+                      item
+                      xs={5}
+                      md={3}
                       sx={{
-                        width: "40%",
-                        color: "#0A2342",
-                        fontSize: "16px",
+                        alignItems: "center",
+                        textAlign: { xs: "left", md: "left" },
                         fontWeight: "700",
-                        direction: isFarsi ? "rtl" : "ltr",
-                        textAlign: "left",
+                        color: "#0A2342",
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        WebkitLineClamp: 3,
+                        whiteSpace: "normal",
                       }}
                     >
                       {question?.title}
-                    </Box>
-                    <Box
+                    </Grid>
+                    <Grid
+                      item
+                      xs={2}
+                      md={2}
                       sx={{
-                        width: "10%",
-                        color: "#0A2342",
-                        fontSize: "14px",
-                        fontWeight: "300",
                         textAlign: "center",
+                        fontWeight: "300",
+                        color: "#0A2342",
                       }}
                     >
-                      {answeredOption && answeredOption.index}.
-                      {answeredOption && answeredOption.title}
-                    </Box>
-                    <Box
+                      {answeredOption &&
+                        `${answeredOption.index}. ${answeredOption.title}`}
+                    </Grid>
+                    <Grid
+                      item
+                      xs={2}
+                      md={2}
                       sx={{
-                        width: "10%",
-                        color: "#0A2342",
-                        fontSize: "14px",
-                        fontWeight: "300",
                         textAlign: "center",
+                        fontWeight: "300",
+                        color: "#0A2342",
                       }}
                     >
-                      {recommendedOption.index}.{recommendedOption.title}
-                    </Box>
-                    <Box
+                      {recommendedOption &&
+                        `${recommendedOption.index}. ${recommendedOption.title}`}
+                    </Grid>
+                    <Grid
+                      item
+                      xs={2}
+                      md={2}
                       sx={{
                         display: "flex",
                         flexWrap: "wrap",
-                        width: "15%",
                         justifyContent: "center",
                       }}
                     >
-                      {attributes.map((attribute: any, index: number) => {
-                        return (
-                          <Box
-                            key={attribute.id}
-                            sx={{
-                              px: "10px",
-                              color: attributeColorPallet[Math.ceil(index % 3)],
-                              background:
-                                attributeBGColorPallet[Math.ceil(index % 3)],
-                              fontSize: "11px",
-                              border: `1px solid  ${
-                                attributeColorPallet[Math.ceil(index % 3)]
-                              }`,
-                              borderRadius: "8px",
-                              m: "4px",
-                              textAlign: "center",
-                            }}
-                          >
-                            {attribute.title}
-                          </Box>
-                        );
-                      })}
-                    </Box>
-                    <Box
+                      {attributes.map((attribute: any, index: number) => (
+                        <Box
+                          key={attribute.id}
+                          sx={{
+                            px: "10px",
+                            color: attributeColorPallet[Math.ceil(index % 3)],
+                            background:
+                              attributeBGColorPallet[Math.ceil(index % 3)],
+                            fontSize: "11px",
+                            border: `1px solid ${
+                              attributeColorPallet[Math.ceil(index % 3)]
+                            }`,
+                            borderRadius: "8px",
+                            m: "4px",
+                            textAlign: "center",
+                            fontFamily: `${isFarsi ? "Vazirmatn" : customFontFamily}`,
+                          }}
+                        >
+                          {attribute.title}
+                        </Box>
+                      ))}
+                    </Grid>
+                    <Grid
+                      item
+                      xs={0}
+                      md={2}
                       sx={{
-                        width: "10%",
-                        color: "#1CC2C4",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        // textDecoration: "underline",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
                         textAlign: "center",
+                        fontWeight: "500",
+                        color: "#004F83",
+                        display: {
+                          md: "block",
+                          xs: "none",
+                        },
                       }}
                     >
-                      {questionnaire.title}
-                      <Box sx={{ textAlign: "center" }}>
-                        Q.{question?.index}
-                      </Box>
-                    </Box>
-                  </Box>
+                      <Box>{questionnaire.title}</Box>
+                      <Box>Q.{question?.index}</Box>
+                    </Grid>
+                  </Grid>
                 );
               })}
             </>
-
             {/* <Divider /> */}
           </>
         )}

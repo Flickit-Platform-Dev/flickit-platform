@@ -48,19 +48,6 @@ def add_invited_user_to_space(user):
         ua.save()
 
 
-@transaction.atomic
-def perform_delete(instance: UserAccess, current_user):
-    if current_user.id != instance.space.owner_id:
-        raise PermissionDenied
-
-    if instance.user_id == instance.space.owner_id:
-        return False
-    instance.delete()
-    if instance.user is not None and instance.space.id == instance.user.current_space_id:
-        instance.user.current_space_id = None
-        instance.user.save()
-    return True
-
 
 @transaction.atomic
 def change_current_space(current_user, space_id):
@@ -73,22 +60,13 @@ def change_current_space(current_user, space_id):
 
 
 @transaction.atomic
-def remove_expire_invitions(user_space_access_list):
-    user_space_access_list_id = [obj['id'] for obj in user_space_access_list]
-    qs = UserAccess.objects.filter(id__in=user_space_access_list_id)
-    expire_list = qs.filter(invite_expiration_date__lt=datetime.now())
-    for expire in expire_list.all():
-        UserAccess.objects.get(id=expire.id).delete()
-
-
-@transaction.atomic
 def leave_user_space(space_id, current_user):
     try:
         space_user_access = UserAccess.objects.get(space_id=space_id, user=current_user)
         space = Space.objects.get(id=space_id)
         if space.owner == current_user:
             return ActionResult(success=False, message="Not allowed to perform this action. ")
-        space_user_access.delete()
+        space.users.remove(current_user)
         return ActionResult(success=True, message='Leaving from the space is done successfully.')
     except UserAccess.DoesNotExist:
         return ActionResult(success=False, message='There is no such user or space')

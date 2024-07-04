@@ -7,12 +7,15 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "@config/theme";
 import { AppProvider } from "./providers/AppProvider";
 import { AuthProvider } from "./providers/AuthProvider";
+import { ConfigProvider } from "./providers/ConfgProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import { createRoot } from "react-dom/client";
 import keycloakService from "@/service/keycloakService";
 import * as Sentry from "@sentry/react";
+import "./assets/font/fonts.css";
+
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   integrations: [
@@ -39,9 +42,11 @@ const renderApp = () =>
           <AppProvider>
             <AuthProvider>
               <ServiceProvider>
-                <CssBaseline />
-                <ToastContainer {...toastDefaultConfig} />
-                <App />
+                <ConfigProvider>
+                  <CssBaseline />
+                  <ToastContainer {...toastDefaultConfig} />
+                  <App />
+                </ConfigProvider>
               </ServiceProvider>
             </AuthProvider>
           </AppProvider>

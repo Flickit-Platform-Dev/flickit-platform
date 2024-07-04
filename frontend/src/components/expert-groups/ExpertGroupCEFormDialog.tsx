@@ -15,12 +15,15 @@ import { CEDialog, CEDialogActions } from "@common/dialogs/CEDialog";
 import FormProviderWithForm from "@common/FormProviderWithForm";
 import RichEditorField from "@common/fields/RichEditorField";
 import UploadField from "@common/fields/UploadField";
+import convertToBytes from "@/utils/convertToBytes";
+import { useQuery } from "@utils/useQuery";
 
 interface IExpertGroupCEFromDialogProps extends DialogProps {
   onClose: () => void;
   onSubmitForm: () => void;
   openDialog?: any;
   context?: any;
+  seenExpertGroup?: () => void;
   hideSubmitAndView?: boolean;
 }
 
@@ -51,10 +54,13 @@ const ExpertGroupCEFormDialog = (props: IExpertGroupCEFromDialogProps) => {
       abortController.abort();
     };
   }, []);
-
+  const seenExpertGroupQuery = useQuery({
+    service: (args, config) => service.seenExpertGroup({ id }, config),
+    runOnMount: false,
+    toastError: false,
+  });
   const onSubmit = async (data: any, event: any, shouldView?: boolean) => {
     const { picture, title, ...restOfData } = data;
-
     const formattedData = {
       ...restOfData,
       picture: picture || null,
@@ -62,23 +68,27 @@ const ExpertGroupCEFormDialog = (props: IExpertGroupCEFromDialogProps) => {
     };
     const formattedUpdateData = {
       ...restOfData,
-      name: title,
+      title: title,
     };
-    if (typeof picture !== "string") {
-      formattedUpdateData.picture = picture;
+
+    const pictureData = {
+      pictureFile: picture ,
     }
+
     setLoading(true);
     try {
       const { data: res } =
         type === "update"
           ? await service.updateExpertGroup(
-              { data: formattedUpdateData, id },
-              { signal: abortController.signal }
-            )
+            { data: formattedUpdateData, id },
+            { signal: abortController.signal }
+          )
           : await service.createExpertGroup(
-              { data: formattedData },
-              { signal: abortController.signal }
-            );
+            { data: formattedData },
+            { signal: abortController.signal }
+          );
+      type === "update" && await service.updateExpertGroupPicture({ data: pictureData, id }, undefined)
+      type === "update"&& await seenExpertGroupQuery.query();
       setLoading(false);
       onSubmitForm();
       close();
@@ -86,8 +96,8 @@ const ExpertGroupCEFormDialog = (props: IExpertGroupCEFromDialogProps) => {
     } catch (e) {
       const err = e as ICustomError;
       setLoading(false);
-      setServerFieldErrors(err?.response?.data?.message, formMethods);
-      toastError(err?.response?.data?.message);
+      setServerFieldErrors(err, formMethods);
+      toastError(err);
     }
   };
 
@@ -115,16 +125,17 @@ const ExpertGroupCEFormDialog = (props: IExpertGroupCEFromDialogProps) => {
                 "image/png": [".png"],
               }}
               defaultValueType="image"
-              defaultValue={defaultValues.picture}
+              defaultValue={defaultValues.pictureLink}
               shouldFetchFileInfo={true}
               hideDropText
               name="picture"
               label={<Trans i18nKey="groupPicture" />}
+              maxSize={convertToBytes(2, "MB")}
             />
           </Grid>
           <Grid item xs={12} md={7}>
             <InputFieldUC
-              defaultValue={defaultValues.name || ""}
+              defaultValue={defaultValues.title || ""}
               name="title"
               label={<Trans i18nKey="title" />}
               required

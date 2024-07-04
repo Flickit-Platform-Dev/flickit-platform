@@ -23,13 +23,14 @@ import AlertBox from "@common/AlertBox";
 import setDocumentTitle from "@utils/setDocumentTitle";
 import { t } from "i18next";
 import QueryData from "../common/QueryData";
+import { useConfigContext } from "@/providers/ConfgProvider";
 const QuestionnaireContainer = () => {
   const { questionnaireQueryData, assessmentTotalProgress, fetchPathInfo } =
     useQuestionnaire();
 
   const progress =
-    ((assessmentTotalProgress?.data?.answers_count || 0) /
-      (assessmentTotalProgress?.data?.question_count || 1)) *
+    ((assessmentTotalProgress?.data?.answersCount || 0) /
+      (assessmentTotalProgress?.data?.questionsCount || 1)) *
     100;
 
   return (
@@ -156,8 +157,13 @@ const QuestionnaireTitle = (props: any) => {
   const { spaceId, assessmentId, page } = useParams();
   const { space, assessment } = pathInfo;
 
+  const { config } = useConfigContext();
+
   useEffect(() => {
-    setDocumentTitle(`${assessment?.title} ${t("questionnaires")}`);
+    setDocumentTitle(
+      `${assessment?.title} ${t("questionnaires")}`,
+      config.appTitle
+    );
   }, [assessment]);
 
   return (

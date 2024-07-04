@@ -1,3 +1,14 @@
+.insight--report__gauge {
+  margin-top: 8%;
+}
+@media screen and (max-width: 620px) {
+  .insight--report__gauge {
+    margin-top: 6%;
+  }
+  .recharts-legend-wrapper {
+    width: 100% !important;
+  }
+}
 .path1 {
   fill: rgba(0, 0, 0, 0.1);
   animation: fillAnimation1 2s linear infinite;

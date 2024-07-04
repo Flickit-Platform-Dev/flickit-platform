@@ -8,6 +8,13 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import { getNumberBaseOnScreen } from "@/utils/returnBasedOnScreen";
+
+export const customFontFamily = '"Roboto","Helvetica","Arial","sans-serif","Vazirmatn"';
+export const customHeaderFamily = 'Oswald, Roboto, Vazirmatn'
+const fontSize = ["12px", "14px", "14px", "16px", "16px"];
+export const primaryFontFamily = 'Ubuntu'
+export const secondaryFontFamily = 'Sansation'
 
 declare module "@mui/material/styles/createPalette" {
   interface TypeBackground {
@@ -22,16 +29,39 @@ declare module "@mui/material/styles/createPalette" {
 
 declare module "@mui/material/styles" {
   interface TypographyVariants {
-    subSmall: React.CSSProperties;
-    subMedium: React.CSSProperties;
-    subLarge: React.CSSProperties;
+    headlineSmall: React.CSSProperties;
+    headlineMedium: React.CSSProperties;
+    headlineLarge: React.CSSProperties;
+    displaySmall: React.CSSProperties;
+    displayMedium: React.CSSProperties;
+    displayLarge: React.CSSProperties;
+    titleSmall: React.CSSProperties;
+    titleMedium: React.CSSProperties;
+    titleLarge: React.CSSProperties;
+    bodySmall: React.CSSProperties;
+    bodyMedium: React.CSSProperties;
+    bodyLarge: React.CSSProperties;
+    labelSmall: React.CSSProperties;
+    labelMedium: React.CSSProperties;
+    labelLarge: React.CSSProperties;
   }
 
-  // allow configuration using `createTheme`
   interface TypographyVariantsOptions {
-    subSmall?: React.CSSProperties;
-    subMedium?: React.CSSProperties;
-    subLarge?: React.CSSProperties;
+    headlineSmall?: React.CSSProperties;
+    headlineMedium?: React.CSSProperties;
+    headlineLarge?: React.CSSProperties;
+    displaySmall?: React.CSSProperties;
+    displayMedium?: React.CSSProperties;
+    displayLarge?: React.CSSProperties;
+    titleSmall?: React.CSSProperties;
+    titleMedium?: React.CSSProperties;
+    titleLarge?: React.CSSProperties;
+    bodySmall?: React.CSSProperties;
+    bodyMedium?: React.CSSProperties;
+    bodyLarge?: React.CSSProperties;
+    labelSmall?: React.CSSProperties;
+    labelMedium?: React.CSSProperties;
+    labelLarge?: React.CSSProperties;
   }
 
   interface Palette {
@@ -43,81 +73,135 @@ declare module "@mui/material/styles" {
 // Update the Typography's variant prop options
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
-    subSmall?: true;
-    subMedium?: true;
-    subLarge?: true;
+    headlineSmall?: true;
+    headlineMedium?: true;
+    headlineLarge?: true;
+    displaySmall?: true;
+    displayMedium?: true;
+    displayLarge?: true;
+    titleSmall?: true;
+    titleMedium?: true;
+    titleLarge?: true;
+    bodySmall?: true;
+    bodyMedium?: true;
+    bodyLarge?: true;
+    labelSmall?: true;
+    labelMedium?: true;
+    labelLarge?: true;
   }
 }
 
 const palette = createPalette({
+  primary: { main: "#003B64", contrastText: "#FFFFFF", light: "#D0E4FF", dark: "#002035" },
+  secondary: { main: "#8B0035", contrastText: "#FFFFFF", light: "#FFD9DE", dark: "#400014" },
   background: { secondary: "#EDF4FC", secondaryDark: "#121d33" },
   ml: { primary: "#6035A1" },
   cl: { primary: "#3596A1" },
-  primary: {
-    main: "#1CC2C4",
-    light:"#EDFCFC",
-    dark:"#117476",
-    contrastText:"#fff"
-  },
-  error:{
-    main: "#D81E5B",
-  },
-  secondary:{
-    main: "#F9A03F",
-  },
-  warning:{
-    main: "#F9A03F",
-  },
-  info:{
-    main: "#0A2342",
-  }
+  error: { main: "#6D0005", contrastText: "#fff" },
+  warning: { main: "#F89311", contrastText: "#fff" },
 });
 
 export const theme = createTheme({
   palette,
   typography: {
-    subSmall: {
-      fontFamily: '"Roboto","Helvetica","Arial","sans-serif","Vazirmatn"',
-      fontWeight: 500,
-      fontSize: "0.665rem",
-      lineHeight: 1.57,
-      letterSpacing: "0.09em",
-      textTransform: "none",
-      color: "GrayText",
+    fontFamily: customFontFamily,
+    headlineSmall: {
+      fontFamily: secondaryFontFamily,
+      fontSize: '1.5rem',
+      lineHeight: "2rem"
     },
-    subMedium: {
-      fontFamily: '"Roboto","Helvetica","Arial","sans-serif","Vazirmatn"',
-      fontWeight: 500,
-      fontSize: "0.75rem",
-      lineHeight: 1.57,
-      letterSpacing: "0.09em",
-      color: "GrayText",
+    headlineMedium: {
+      fontFamily: secondaryFontFamily,
+      fontSize: '1.75rem',
+      lineHeight: "2.25rem"
     },
-    subLarge: {
-      fontFamily: '"Roboto","Helvetica","Arial","sans-serif","Vazirmatn"',
-      fontWeight: 500,
-      fontSize: "0.8rem",
-      lineHeight: 1.57,
-      letterSpacing: "0.09em",
-      color: "GrayText",
+    headlineLarge: {
+      fontFamily: secondaryFontFamily,
+      fontWeight: 'Bold',
+      fontSize: '4.5rem',
+      lineHeight: "5.75rem"
+    },
+    displaySmall: {
+      fontSize: '1.5rem',
+      lineHeight: "2rem",
+      letterSpacing: "-3%"
+    },
+    displayMedium: {
+      fontSize: '2rem',
+      fontWeight: 'Bold',
+      lineHeight: "2.25rem"
+    },
+    displayLarge: {
+      fontSize: '4rem',
+      fontWeight: 'Bold',
+      lineHeight: "4.25rem",
+    },
+    titleSmall: {
+      fontSize: '0.875rem',
+      lineHeight: "1.25rem",
+      letterSpacing: ".1px"
+
+    },
+    titleMedium: {
+      fontSize: '1rem',
+      lineHeight: "1.5rem",
+      letterSpacing: ".15px"
+    },
+    titleLarge: {
+      fontSize: '1.375rem',
+      lineHeight: "1.75rem"
+    },
+    bodySmall: {
+      fontWeight: 'lighter',
+      fontSize: '0.75rem',
+      lineHeight: "1rem",
+      letterSpacing: "0.4px"
+    },
+    bodyMedium: {
+      fontWeight: 'lighter',
+      fontSize: '0.875rem',
+      lineHeight: "1.125rem",
+      letterSpacing: "0.25px"
+    },
+    bodyLarge: {
+      fontSize: '1rem',
+      lineHeight: "1.5rem",
+      letterSpacing: "0.5px"
+    },
+    labelSmall: {
+      fontFamily: secondaryFontFamily,
+      fontSize: '0.6875rem',
+      lineHeight: "0.75rem",
+      letterSpacing: '0.5px',
+    },
+    labelMedium: {
+      fontSize: '0.75rem',
+      lineHeight: "1rem",
+      letterSpacing: '0.5px',
+    },
+    labelLarge: {
+      fontWeight: 'Bold',
+      fontSize: '0.875rem',
+      lineHeight: "1.125rem",
+      letterSpacing: "0.1px"
     },
     button: {
-      fontFamily: "'Oswald','Roboto','Vazirmatn'",
+      fontFamily: customHeaderFamily,
       letterSpacing: ".1em",
     },
     h3: {
-      fontFamily: "'Oswald','Roboto','Vazirmatn'",
+      fontFamily: customHeaderFamily,
     },
     h4: {
-      fontFamily: "'Oswald','Roboto','Vazirmatn'",
+      fontFamily: customHeaderFamily,
       opacity: 0.9,
     },
     h5: {
-      fontFamily: "'Oswald','Roboto','Vazirmatn'",
+      fontFamily: customHeaderFamily,
       opacity: 0.85,
     },
     h6: {
-      fontFamily: "'Oswald','Roboto','Vazirmatn'",
+      fontFamily: customHeaderFamily,
       letterSpacing: "0.05em",
       lineHeight: 1.6,
       opacity: 0.85,
@@ -128,9 +212,30 @@ export const theme = createTheme({
       styleOverrides: `
         html {
           scroll-behavior: smooth;
+          font-size: ${fontSize[4]};
+        }
+        @media (max-width: 1600px) {
+          html {
+            font-size: ${fontSize[3]};
+          }
+        }
+        @media (max-width: 1280px) {
+          html {
+            font-size: ${fontSize[2]};
+          }
+        }
+        @media (max-width: 960px) {
+          html {
+            font-size: ${fontSize[1]};
+          }
+        }
+        @media (max-width: 600px) {
+          html {
+            font-size: ${fontSize[0]};
+          }
         }
         body {
-          background: #EDF4FC;
+          background: #EDEFF1;
         }
       `,
     },
@@ -145,7 +250,7 @@ export const theme = createTheme({
     },
     MuiButtonGroup: {
       defaultProps: {
-       color:"primary"
+        color: "primary"
       },
     },
     MuiTabs: {
@@ -179,6 +284,7 @@ export const theme = createTheme({
         },
       },
     },
+
 
     //@ts-expect-error
     MuiTabPanel: {

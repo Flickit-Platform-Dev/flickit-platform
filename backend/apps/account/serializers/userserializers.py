@@ -17,8 +17,6 @@ class ExpertGroupSimpleSerializers(serializers.ModelSerializer):
 
 
 class UserCustomSerializer(BaseUserSerializer):
-    from baseinfo.serializers import commonserializers
-    current_space = SpaceSerializer()
     spaces = SpaceSerializer(many=True)
     expert_groups = ExpertGroupSimpleSerializers(many=True)
     is_expert = serializers.SerializerMethodField(method_name='has_expet_access')
@@ -36,7 +34,7 @@ class UserCustomSerializer(BaseUserSerializer):
         return user.has_perm('baseinfo.manage_expert_group')
 
     class Meta(BaseUserSerializer.Meta):
-        fields = ['id', 'email', 'display_name', 'current_space', 'default_space', 'spaces', 'is_active',
+        fields = ['id', 'email', 'display_name', 'spaces', 'is_active',
                   'expert_groups', 'is_expert', 'bio', 'picture', 'linkedin']
 
 
@@ -69,11 +67,3 @@ class UserSerializer(BaseUserSerializer):
     class Meta(BaseUserSerializer.Meta):
         fields = ['id', 'email', 'display_name', 'bio', 'picture', 'linkedin']
 
-
-class UserAccessSerializer(serializers.ModelSerializer):
-    user = UserSimpleSerializer(read_only=True)
-    space = SpaceSimpleSerializer()
-
-    class Meta:
-        model = UserAccess
-        fields = ['id', 'user', 'space', 'invite_email', 'invite_expiration_date']

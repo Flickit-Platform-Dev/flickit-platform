@@ -76,7 +76,7 @@ const ExpertGroupContainer = () => {
   const createAssessmentKitDialogProps = useDialog({
     context: { type: "create", data: { expertGroupId } },
   });
-  const [assessmentKitsCounts, setAssessmentKitsCounts] = useState<any>({});
+  const [assessmentKitsCounts, setAssessmentKitsCounts] = useState<any>([]);
   const [numberOfMembers, setNumberOfMembers] = useState<any>(Number);
   return (
     <QueryData
@@ -96,7 +96,11 @@ const ExpertGroupContainer = () => {
           editable,
           assessment_kits = [],
         } = data || {};
-        // const is_owner = data?.owner?.id === userInfo.id;
+        const is_member = expertGroupMembersQueryData.data?.items?.some(
+          (res: any) => {
+            return res.id === userInfo.id;
+          }
+        );
         const hasAccess = editable;
         setDocTitle(`${t("expertGroup")}: ${title || ""}`);
         return (
@@ -146,7 +150,7 @@ const ExpertGroupContainer = () => {
                     queryData={queryData}
                     hasAccess={editable}
                     dialogProps={createAssessmentKitDialogProps}
-                    is_member={editable}
+                    is_member={is_member}
                     is_expert={editable}
                     setAssessmentKitsCounts={setAssessmentKitsCounts}
                   />
@@ -156,6 +160,7 @@ const ExpertGroupContainer = () => {
                     queryData={expertGroupMembersQueryData}
                     inviteeQueryData={expertGroupMembersInviteeQueryData}
                     hasAccess={editable}
+                    setNumberOfMembers={setNumberOfMembers}
                   />
                 </Box>
               </Grid>
@@ -241,10 +246,14 @@ const ExpertGroupContainer = () => {
                           fontSize: "inherit",
                         }}
                       >
-                        {assessmentKitsCounts?.published &&
-                          `${assessmentKitsCounts?.published.length} ${t(
-                            "publishedAssessmentKits"
-                          ).toLowerCase()}`}
+                        {assessmentKitsCounts.filter(
+                          (item: any) => item.published
+                        ) &&
+                          `${
+                            assessmentKitsCounts.filter(
+                              (item: any) => item.published
+                            ).length
+                          } ${t("publishedAssessmentKits").toLowerCase()}`}
                       </Typography>
                       {editable && (
                         <Box ml="auto">
@@ -286,10 +295,14 @@ const ExpertGroupContainer = () => {
                             fontSize: "inherit",
                           }}
                         >
-                          {assessmentKitsCounts?.unpublished &&
-                            `${assessmentKitsCounts?.unpublished.length} ${t(
-                              "unpublishedAssessmentKits"
-                            ).toLowerCase()}`}
+                          {assessmentKitsCounts.filter(
+                            (item: any) => !item.published
+                          ) &&
+                            `${
+                              assessmentKitsCounts.filter(
+                                (item: any) => !item.published
+                              ).length
+                            } ${t("unpublishedAssessmentKits").toLowerCase()}`}
                         </Typography>
                       </Box>
                     )}
@@ -302,7 +315,6 @@ const ExpertGroupContainer = () => {
                         query={expertGroupMembersQueryData}
                         inviteeQuery={expertGroupMembersInviteeQueryData}
                         hasAccess={hasAccess}
-                        setNumberOfMembers={setNumberOfMembers}
                       />
                     </Box>
                   )}
@@ -355,7 +367,7 @@ const EditExpertGroupButton = (props: any) => {
 };
 
 const ExpertGroupMembers = (props: any) => {
-  const { hasAccess, query, inviteeQuery, setNumberOfMembers } = props;
+  const { hasAccess, query, inviteeQuery } = props;
   const [openInvitees, setOpenInvitees] = useState(false);
   const [openAddMembers, setOpenAddMembers] = useState(false);
 
@@ -367,7 +379,6 @@ const ExpertGroupMembers = (props: any) => {
           const { items = [] } = data;
 
           const users = items.filter((user: any) => user.status === "ACTIVE");
-          setNumberOfMembers(users?.length);
           return (
             <Box>
               <Typography
@@ -413,10 +424,11 @@ const ExpertGroupMembers = (props: any) => {
           render={(data) => {
             const { items = [] } = data;
             return (
-              <Box mb={2}>
+              <Box my={2}>
                 <Invitees
                   users={items}
-                  query={inviteeQuery.query}
+                  query={query.query}
+                  inviteeQuery={inviteeQuery.query}
                   setOpenInvitees={setOpenInvitees}
                   openInvitees={openInvitees}
                 />
@@ -430,7 +442,7 @@ const ExpertGroupMembers = (props: any) => {
 };
 
 const Invitees = (props: any) => {
-  const { users, query, setOpenInvitees, openInvitees } = props;
+  const { users, query, inviteeQuery, setOpenInvitees, openInvitees } = props;
   const hasInvitees = users.length > 0;
   return (
     <Box>
@@ -442,7 +454,7 @@ const Invitees = (props: any) => {
           sx={{ fontSize: ".9rem", opacity: 0.8, cursor: "pointer" }}
           onClick={() => setOpenInvitees((state: boolean) => !state)}
         >
-          <Trans i18nKey="invitees" />
+          <Trans i18nKey="invited" />
           <Box
             sx={{
               ...styles.centerV,
@@ -494,6 +506,7 @@ const Invitees = (props: any) => {
                 <Box ml="auto" sx={{ ...styles.centerV }}>
                   <MemberActions
                     query={query}
+                    inviteeQuery={inviteeQuery}
                     userId={id}
                     email={email}
                     isInvitationExpired={true}
@@ -509,7 +522,7 @@ const Invitees = (props: any) => {
 };
 
 const MemberActions = (props: any) => {
-  const { query, userId, email, isInvitationExpired } = props;
+  const { query, inviteeQuery, userId, email, isInvitationExpired } = props;
   const { expertGroupId = "" } = useParams();
   const { service } = useServiceContext();
   const { query: deleteExpertGroupMember, loading } = useQuery({
@@ -530,6 +543,7 @@ const MemberActions = (props: any) => {
   const deleteItem = async (e: any) => {
     await deleteExpertGroupMember();
     await query();
+    await inviteeQuery();
   };
 
   const inviteMember = async () => {
@@ -540,13 +554,17 @@ const MemberActions = (props: any) => {
       });
       res?.message && toast.success(res.message);
       query();
+      inviteeQuery();
     } catch (e) {
       const error = e as ICustomError;
-      if ("message" in error.data || {}) {
-        if (Array.isArray(error.data.message)) {
-          toastError(error.data?.message[0]);
-        } else if (error.data?.message) {
-          toastError(error.data?.message);
+      if (
+        error.response?.data &&
+        error.response?.data.hasOwnProperty("message")
+      ) {
+        if (Array.isArray(error.response?.data?.message)) {
+          toastError(error.response?.data?.message[0]);
+        } else {
+          toastError(error);
         }
       }
     }
@@ -628,11 +646,14 @@ const AddMember = (props: any) => {
       query();
     } catch (e) {
       const error = e as ICustomError;
-      if ("message" in error.response.data || {}) {
-        if (Array.isArray(error.response.data.message)) {
-          toastError(error.response.data?.message[0]);
-        } else if (error.response.data?.message) {
-          toastError(error.response.data?.message);
+      if (
+        error.response?.data &&
+        error.response?.data.hasOwnProperty("message")
+      ) {
+        if (Array.isArray(error.response?.data?.message)) {
+          toastError(error.response?.data?.message[0]);
+        } else {
+          toastError(error);
         }
       }
     }
@@ -731,8 +752,8 @@ const AssessmentKitsList = (props: any) => {
             </Box>
           }
           isDataEmpty={(data) => {
-            const { results } = data;
-            const isEmpty = results;
+            const { items } = data;
+            const isEmpty = items;
             return isEmpty;
           }}
           renderLoading={() => (
@@ -743,31 +764,15 @@ const AssessmentKitsList = (props: any) => {
             </>
           )}
           render={(data = {}) => {
-            const { results } = data;
-            if (results) {
-              setAssessmentKitsCounts(results);
+            const { items } = data;
+            if (items) {
+              setAssessmentKitsCounts(items);
             }
             return (
               <>
-                {results?.published.map((assessment_kit: any) => {
-                  return (
-                    <AssessmentKitListItem
-                      link={
-                        is_member
-                          ? `assessment-kits/${assessment_kit?.id}`
-                          : `/assessment-kits/${assessment_kit?.id}`
-                      }
-                      key={assessment_kit?.id}
-                      data={assessment_kit}
-                      fetchAssessmentKits={assessmentKitQuery.query}
-                      hasAccess={hasAccess}
-                      is_member={is_member}
-                      is_active={true}
-                    />
-                  );
-                })}
-                {is_member &&
-                  results?.unpublished.map((assessment_kit: any) => {
+                {items
+                  ?.filter((item: any) => item.published)
+                  ?.map((assessment_kit: any) => {
                     return (
                       <AssessmentKitListItem
                         link={
@@ -780,10 +785,30 @@ const AssessmentKitsList = (props: any) => {
                         fetchAssessmentKits={assessmentKitQuery.query}
                         hasAccess={hasAccess}
                         is_member={is_member}
-                        is_active={false}
+                        is_active={true}
                       />
                     );
                   })}
+                {is_member &&
+                  items
+                    ?.filter((item: any) => !item.published)
+                    ?.map((assessment_kit: any) => {
+                      return (
+                        <AssessmentKitListItem
+                          link={
+                            is_member
+                              ? `assessment-kits/${assessment_kit?.id}`
+                              : `/assessment-kits/${assessment_kit?.id}`
+                          }
+                          key={assessment_kit?.id}
+                          data={assessment_kit}
+                          fetchAssessmentKits={assessmentKitQuery.query}
+                          hasAccess={hasAccess}
+                          is_member={is_member}
+                          is_active={false}
+                        />
+                      );
+                    })}
               </>
             );
           }}
@@ -810,7 +835,7 @@ const CreateAssessmentKitButton = (props: {
 };
 
 const ExpertGroupMembersDetail = (props: any) => {
-  const { queryData, inviteeQueryData, hasAccess } = props;
+  const { queryData, inviteeQueryData, hasAccess, setNumberOfMembers } = props;
 
   return (
     <>
@@ -825,7 +850,6 @@ const ExpertGroupMembersDetail = (props: any) => {
               mb={2}
               titleProps={{
                 fontSize: "1rem",
-                fontFamily: "Roboto",
                 textTransform: "unset",
                 letterSpacing: ".05rem",
               }}
@@ -841,7 +865,7 @@ const ExpertGroupMembersDetail = (props: any) => {
           render={(data) => {
             const { items = [] } = data;
             const users = items.filter((user: any) => user.status === "ACTIVE");
-
+            setNumberOfMembers(users?.length);
             return (
               <Box mt={hasAccess ? 6 : 1}>
                 <Box>
@@ -852,7 +876,6 @@ const ExpertGroupMembersDetail = (props: any) => {
                         titleProps={{
                           textTransform: "none",
                           fontSize: ".95rem",
-                          fontFamily: "Roboto",
                           mb: 1,
                         }}
                       >
@@ -971,7 +994,6 @@ const ExpertGroupMembersDetail = (props: any) => {
                       titleProps={{
                         textTransform: "none",
                         fontSize: ".95rem",
-                        fontFamily: "Roboto",
                       }}
                     >
                       <Trans i18nKey="invitees" />
@@ -1021,6 +1043,7 @@ const ExpertGroupMembersDetail = (props: any) => {
                             </Box>
                             <MemberActions
                               query={queryData.query}
+                              inviteeQuery={inviteeQueryData.query}
                               userId={id}
                               isInvitationExpired={true}
                               email={email}

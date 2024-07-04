@@ -15,7 +15,7 @@ import toastError from "@utils/toastError";
 import { ToolbarCreateItemBtn } from "@common/buttons/ToolbarCreateItemBtn";
 import { ECustomErrorType } from "@types";
 import { ErrorNotFoundOrAccessDenied } from "@common/errors/ErrorNotFoundOrAccessDenied";
-import SupTitleBreadcrumb from "@common/SupTitleBreadcrumb";
+import SupTitleBreadcrumb from "@/components/common/SupTitleBreadcrumb";
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import NoteAddRoundedIcon from "@mui/icons-material/NoteAddRounded";
@@ -42,8 +42,8 @@ const AssessmentContainer = () => {
   };
   const pageCount = size === 0 ? 1 : Math.ceil(total / size);
   return error &&
-    (errorObject?.type === ECustomErrorType.ACCESS_DENIED ||
-      errorObject?.type === ECustomErrorType.NOT_FOUND) ? (
+    (errorObject?.code === ECustomErrorType.ACCESS_DENIED ||
+      errorObject?.code === ECustomErrorType.NOT_FOUND) ? (
     <ErrorNotFoundOrAccessDenied />
   ) : (
     <Box display="flex" flexDirection="column" m="auto">
@@ -129,7 +129,7 @@ const AssessmentContainer = () => {
             variant="h3"
             sx={{
               color: "#9DA7B3",
-              fontSize: "48px",
+              fontSize: "3rem",
               fontWeight: "900",
               width: "60%",
             }}
@@ -141,7 +141,7 @@ const AssessmentContainer = () => {
             variant="h1"
             sx={{
               color: "#9DA7B3",
-              fontSize: "16px",
+              fontSize: "1rem",
               fontWeight: "500",
               width: "60%",
             }}
@@ -167,7 +167,7 @@ const AssessmentContainer = () => {
                 })
               }
             >
-              <Typography sx={{ fontSize: "20px" }} variant="button">
+              <Typography sx={{ fontSize: "1.25rem" }} variant="button">
                 <Trans i18nKey="newAssessment" />
               </Typography>
             </Button>

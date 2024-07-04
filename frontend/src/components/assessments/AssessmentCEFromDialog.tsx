@@ -15,6 +15,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import toastError from "@utils/toastError";
 import { CEDialog, CEDialogActions } from "@common/dialogs/CEDialog";
 import FormProviderWithForm from "@common/FormProviderWithForm";
+import { useQuery } from "@utils/useQuery";
 import AutocompleteAsyncField, {
   useConnectAutocompleteField,
 } from "@common/fields/AutocompleteAsyncField";
@@ -63,7 +64,7 @@ const AssessmentCEFromDialog = (props: IAssessmentCEFromDialogProps) => {
               id: assessmentId,
               data: {
                 title,
-                color_id: color,
+                colorId: color,
               },
             },
             { signal: abortController.signal }
@@ -71,10 +72,10 @@ const AssessmentCEFromDialog = (props: IAssessmentCEFromDialogProps) => {
         : await service.createAssessment(
             {
               data: {
-                space_id: spaceId || space?.id,
-                assessment_kit_id: assessment_kit?.id,
+                spaceId: spaceId || space?.id,
+                assessmentKitId: assessment_kit?.id,
                 title: title,
-                color_id: color,
+                colorId: color,
               },
             },
             { signal: abortController.signal }
@@ -163,8 +164,10 @@ const AssessmentKitField = ({
   staticData: any;
 }) => {
   const { service } = useServiceContext();
+
   const queryData = useConnectAutocompleteField({
     service: (args, config) => service.fetchAssessmentKitsOptions(args, config),
+    accessor: "items",
   });
 
   return (
@@ -189,6 +192,7 @@ const SpaceField = ({ defaultValue }: { defaultValue: any }) => {
     service: (args, config) => service.fetchSpaces(args, config),
   });
 
+
   return (
     <AutocompleteAsyncField
       {...queryData}
@@ -198,6 +202,7 @@ const SpaceField = ({ defaultValue }: { defaultValue: any }) => {
       defaultValue={defaultValue}
       label={<Trans i18nKey="space" />}
       data-cy="space"
+      hasAddBtn={true}
     />
   );
 };

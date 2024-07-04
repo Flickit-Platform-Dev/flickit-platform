@@ -11,59 +11,10 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from baseinfo.services import assessmentkitservice, dsl_services
+from baseinfo.services import assessmentkitservice, dsl_services, assessment_kit_service
 from baseinfo.serializers.assessmentkitserializers import *
 from baseinfo.models.assessmentkitmodels import AssessmentKitDsl, AssessmentKitTag, AssessmentKit
 from baseinfo.permissions import IsMemberExpertGroup, IsOwnerExpertGroup
-
-
-class AssessmentKitViewSet(mixins.RetrieveModelMixin,
-                           mixins.DestroyModelMixin,
-                           mixins.ListModelMixin,
-                           GenericViewSet):
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    search_fields = ['title']
-
-    # filterset_fields = ['is_private']
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return AssessmentKitListSerializer
-        return AssessmentKitSerilizer
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [IsAuthenticated, IsOwnerExpertGroup]
-        return [permission() for permission in permission_classes]
-
-    def get_queryset(self):
-        if self.action == 'list':
-            if "is_private" in self.request.query_params:
-
-                if self.request.query_params["is_private"].lower() == "true":
-                    return (AssessmentKit.objects.filter(is_active=True)
-                            .filter(is_private=True)
-                            .filter(users=self.request.user))
-
-                elif self.request.query_params["is_private"].lower() == "false":
-                    return (AssessmentKit.objects.filter(is_active=True)
-                            .filter(is_private=False))
-
-            return (AssessmentKit.objects.filter(is_active=True)
-                    .filter(is_private=True)
-                    .filter(users=self.request.user)) | (AssessmentKit.objects.filter(is_active=True)
-                                                         .filter(is_private=False))
-        return AssessmentKit.objects.all()
-
-    @transaction.atomic
-    def destroy(self, request, *args, **kwargs):
-        result = assessmentkitservice.is_assessment_kit_deletable(kwargs['pk'])
-        if result.success:
-            return super().destroy(request, *args, **kwargs)
-        else:
-            return Response({'message': result.message}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AssessmentKitListForExpertGroupApi(APIView):
@@ -101,8 +52,6 @@ class AssessmentKitLikeApi(APIView):
         return Response({'likes': assessment_kit.likes.count()})
 
 
-
-
 class LoadAssessmentKitInfoEditableApi(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -116,22 +65,18 @@ class LoadAssessmentKitInfoEditableApi(APIView):
         return Response(response[0], status=status.HTTP_200_OK)
 
 
-class LoadAssessmentKitInfoStatisticalApi(APIView):
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(responses={200: LoadAssessmentKitInfoStatisticalSerilizer(many=True)})
-    def get(self, request, assessment_kit_id):
-        if not ExpertGroup.objects.filter(assessmentkits=assessment_kit_id).filter(users=request.user.id).exists():
-            return Response({"code": "NOT_FOUND", 'message': "'assessment_kit_id' does not exist"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        assessment_kit = assessmentkitservice.get_assessment_kit(assessment_kit_id)
-        response = LoadAssessmentKitInfoStatisticalSerilizer(assessment_kit, many=True).data
-        return Response(response[0], status=status.HTTP_200_OK)
-
-
 class EditAssessmentKitInfoApi(APIView):
-    permission_classes = [IsAuthenticated, IsOwnerExpertGroup]
     serializer_class = EditAssessmentKitInfoSerializer
+
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated]
+        if self.request.method == 'PATCH':
+            permission_classes = [IsAuthenticated, IsOwnerExpertGroup]
+        return [permission() for permission in permission_classes]
+
+    def get(self, request, assessment_kit_id):
+        result = assessment_kit_service.get_assessment_kit_publish(request, assessment_kit_id)
+        return Response(data=result["body"], status=result["status_code"])
 
     @swagger_auto_schema(request_body=EditAssessmentKitInfoSerializer(),
                          responses={200: LoadAssessmentKitInfoEditableSerilizer(many=True)})

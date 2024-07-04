@@ -22,6 +22,7 @@ import { Box, Button, Typography, Alert } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Divider from "@mui/material/Divider";
 import { keyframes } from "@emotion/react";
+import convertToBytes from "@/utils/convertToBytes";
 
 interface IAssessmentKitCEFromDialogProps extends DialogProps {
   onClose: () => void;
@@ -94,9 +95,9 @@ const AssessmentKitCEFromDialog = (props: IAssessmentKitCEFromDialogProps) => {
       shouldView && res?.id && navigate(`assessment-kits/${res.id}`);
     } catch (e: any) {
       const err = e as ICustomError;
-      toastError(err.response.data.message);
+      toastError(err);
       setLoading(false);
-      setServerFieldErrors(err.response.data.message, formMethods);
+      setServerFieldErrors(err, formMethods);
       formMethods.clearErrors();
 
       return () => {
@@ -138,6 +139,7 @@ const AssessmentKitCEFromDialog = (props: IAssessmentKitCEFromDialogProps) => {
             setShowErrorLog={setShowErrorLog}
             setSyntaxErrorObject={setSyntaxErrorObject}
             setIsValid={setIsValid}
+            maxSize={convertToBytes(5, "MB")}
           />
         </Grid>
         <Grid
@@ -371,7 +373,7 @@ const IsPrivateSwitch = (props: any) => {
               fontWeight="700"
               textTransform={"uppercase"}
               sx={{ userSelect: "none" }}
-              fontSize={"14px"}
+              fontSize="0.825rem"
             >
               <Trans i18nKey="private" />
             </Typography>
@@ -397,7 +399,7 @@ const IsPrivateSwitch = (props: any) => {
               fontWeight="700"
               textTransform={"uppercase"}
               sx={{ userSelect: "none" }}
-              fontSize={"14px"}
+              fontSize="0.825rem"
             >
               <Trans i18nKey="public" />
             </Typography>
