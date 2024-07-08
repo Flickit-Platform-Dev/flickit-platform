@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Box, Divider, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { Box, Divider, Typography, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import QueryBatchData from "@common/QueryBatchData";
 import { useParams } from "react-router-dom";
@@ -16,9 +16,15 @@ import { AssessmentSubjectStatus } from "./AssessmentSubjectStatus";
 import { AssessmentReportKit } from "./AssessmentReportKit";
 import { Trans } from "react-i18next";
 import { styles } from "@styles";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import AssessmentReportPDF from "./AssessmentReportPDF";
+import { htmlToImage } from "@utils/htmlToImage";
+
 const AssessmentReportContainer = (props: any) => {
   const { service } = useServiceContext();
   const { assessmentId = "" } = useParams();
+  const [summaryImage, setSummaryImage] = useState(null);
+  const summaryRef = useRef(null);
 
   const queryData = useQuery<IAssessmentReportModel>({
     service: (args, config) =>
@@ -67,6 +73,14 @@ const AssessmentReportContainer = (props: any) => {
     }
   }, [queryData.errorObject]);
 
+  useEffect(() => {
+    if (summaryRef.current) {
+      htmlToImage(summaryRef.current).then((dataUrl: any) => {
+        setSummaryImage(dataUrl);
+      });
+    }
+  }, [summaryRef, queryData.data]);
+
   return (
     <QueryBatchData
       queryBatchData={[queryData, assessmentTotalProgress]}
@@ -96,8 +110,12 @@ const AssessmentReportContainer = (props: any) => {
                 </Typography>
                 <Grid container alignItems="stretch" spacing={5} mt={1}>
                   <Grid item lg={6} md={6} sm={12} xs={12}>
-                    <Box display="flex" flexDirection="column" gap={1}       height="100%"
->
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      gap={1}
+                      height="100%"
+                    >
                       <Typography
                         color="#73808C"
                         marginX={4}
@@ -105,14 +123,16 @@ const AssessmentReportContainer = (props: any) => {
                       >
                         <Trans i18nKey="general" />
                       </Typography>
-                      <AssessmentSummary
-                        expertGroup={expertGroup}
-                        assessmentKit={assessment}
-                        data={data}
-                        progress={totalProgress}
-                        questionCount={questionsCount}
-                        answerCount={answersCount}
-                      />
+                      <div ref={summaryRef}>
+                        <AssessmentSummary
+                          expertGroup={expertGroup}
+                          assessmentKit={assessment}
+                          data={data}
+                          progress={totalProgress}
+                          questionCount={questionsCount}
+                          answerCount={answersCount}
+                        />
+                      </div>
                     </Box>
                   </Grid>
                   <Grid item lg={6} md={6} sm={12} xs={12}>
@@ -194,6 +214,31 @@ const AssessmentReportContainer = (props: any) => {
                   subjects={subjects}
                   assessment={assessment}
                 />
+              </Grid>
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <Box display="flex" justifyContent="center" mt={4}>
+                  <PDFDownloadLink
+                    document={
+                      <AssessmentReportPDF
+                        data={data}
+                        progress={progress}
+                        summaryImage={summaryImage}
+                      />
+                    }
+                    fileName="assessment_report.pdf"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {({ loading }: any) =>
+                      loading ? (
+                        <Button variant="contained" disabled>
+                          Generating PDF...
+                        </Button>
+                      ) : (
+                        <Button variant="contained">Download PDF</Button>
+                      )
+                    }
+                  </PDFDownloadLink>
+                </Box>
               </Grid>
             </Grid>
           </Box>
