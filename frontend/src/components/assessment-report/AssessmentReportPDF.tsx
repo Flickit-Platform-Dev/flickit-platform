@@ -1,5 +1,3 @@
-// components/AssessmentReportPDF.tsx
-
 import React, { FC, useEffect, useState } from "react";
 import {
   Document,
@@ -9,12 +7,12 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-import { toPng } from "html-to-image";
+import html2canvas from "html2canvas";
 
 const styles = StyleSheet.create({
   page: {
     flexDirection: "column",
-    backgroundColor: "#E4E4E4",
+    backgroundColor: "#fff",
     padding: 10,
   },
   header: {
@@ -42,9 +40,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 12,
   },
-  footerText: {
-    fontSize: 12,
-  },
   section: {
     margin: 10,
     padding: 10,
@@ -59,6 +54,40 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 12,
   },
+  description: {
+    fontSize: 12,
+    margin: 12,
+  },
+  table: {
+    display: "table",
+    width: "100%",
+    borderStyle: "solid",
+    borderColor: "#000",
+    borderWidth: 1,
+    marginBottom: 10,
+  },
+  tableRow: {
+    flexDirection: "row",
+  },
+  tableCellHeader: {
+    width: "33.33%", // Adjusted to three columns
+    borderStyle: "solid",
+    borderColor: "#000",
+    borderWidth: 1,
+    padding: 5,
+    textAlign: "center",
+    fontWeight: "bold",
+    backgroundColor: "#ccc", // Header background color
+    color: "#000", // Header text color
+  },
+  tableCell: {
+    width: "33.33%", // Adjusted to three columns
+    borderStyle: "solid",
+    borderColor: "#000",
+    borderWidth: 1,
+    padding: 5,
+    textAlign: "center",
+  },
   divider: {
     marginVertical: 10,
     borderBottomWidth: 1,
@@ -68,7 +97,10 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
   },
-  // Additional styles...
+  chart: {
+    width: 300,
+    height: 200,
+  },
 });
 
 interface AssessmentReportPDFProps {
@@ -83,11 +115,42 @@ const AssessmentReportPDF: FC<AssessmentReportPDFProps> = ({
   summaryImage,
 }) => {
   const [chartImage, setChartImage] = useState<string | null>(null);
+  const [maturityGauge, setMaturityGauge] = useState<string | null>(null);
 
   useEffect(() => {
-    if (summaryImage) {
-      setChartImage(summaryImage);
-    }
+    const generateImage = async () => {
+      const chartInstance =
+        document.querySelector(".recharts-wrapper")?.parentNode?.parentNode
+          ?.parentNode;
+
+      if (!chartInstance) return;
+
+      try {
+        const canvas = await html2canvas(chartInstance);
+        const dataUrl = canvas.toDataURL("image/png");
+        setChartImage(dataUrl);
+      } catch (error) {
+        console.error("Error generating image from HTML:", error);
+      }
+    };
+
+    const generateImage2 = async () => {
+      const chartInstance = document.querySelector(".insight--report__gauge")
+        ?.parentNode?.parentNode?.parentNode?.parentNode;
+
+      console.log(chartInstance);
+      if (!chartInstance) return;
+
+      try {
+        const canvas = await html2canvas(chartInstance);
+        const dataUrl = canvas.toDataURL("image/png");
+        setMaturityGauge(dataUrl);
+      } catch (error) {
+        console.error("Error generating image from HTML:", error);
+      }
+    };
+    setTimeout(generateImage, 5000);
+    setTimeout(generateImage2, 5000);
   }, [summaryImage]);
 
   const { status, assessment, subjects } = data || {};
@@ -98,74 +161,106 @@ const AssessmentReportPDF: FC<AssessmentReportPDFProps> = ({
 
   const Header = () => (
     <View style={styles.header}>
-      <Text style={styles.headerText}>Assessment Report</Text>
+      <Text style={styles.headerText}>{assessment.title} Report</Text>
       <Text style={styles.headerText}>
         Generated on: {new Date().toLocaleString()}
       </Text>
     </View>
   );
 
-  const Footer = () => (
-    <View style={styles.footer}>
-      <Text style={styles.footerText}>Confidential Report</Text>
-    </View>
-  );
+  // Render subjects as a table
+  const renderSubjectsTable = () => {
+    if (!subjects || subjects.length === 0) return null;
 
-  // Determine sections count based on your data structure
-  let sectionsCount = 1; // Default to at least one section
+    return (
+      <View style={styles.section}>
+        <Text style={styles.title}>Subjects Table</Text>
+        <View style={styles.table}>
+          {/* Table Header */}
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCellHeader}>Subject Name</Text>
+            <Text style={styles.tableCellHeader}>Description</Text>
+            <Text style={styles.tableCellHeader}>Maturity Level</Text>
+          </View>
 
-  // Example: Calculate sections based on array length
-  if (subjects && Array.isArray(subjects)) {
-    sectionsCount += subjects.length; // Add number of subjects as sections
-  }
+          {/* Table Body */}
+          {subjects.map((subject: any) => (
+            <View key={subject.id} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{subject.title}</Text>
+              <Text style={styles.tableCell}>{subject.description}</Text>
+              <Text style={styles.tableCell}>
+                {subject.maturityLevel.title}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  };
 
   return (
     <Document>
-      {[...Array(sectionsCount)].map((_, index) => (
-        <Page
-          key={index}
-          size="A4"
-          style={styles.page}
-          render={({ pageNumber, totalPages }: any) => (
-            <>
-              <Header />
-              <View style={styles.section}>
-                <Text style={styles.title}>Assessment Report</Text>
-                <Text style={styles.subtitle}>General</Text>
-                {chartImage && <Image style={styles.image} src={chartImage} />}
-                <View style={styles.divider} />
-                <Text style={styles.subtitle}>Overall Status</Text>
-                <View style={styles.divider} />
-                {/* Render additional dynamic content here */}
-                {/* Example: Render subject-specific content */}
-                {subjects && subjects[index] && (
-                  <>
-                    <Text style={styles.subtitle}>
-                      Subject: {subjects[index].name}
-                    </Text>
-                    <Text>Details: {subjects[index].details}</Text>
-                    {/* Additional content for each subject */}
-                  </>
-                )}
-                <View style={styles.divider} />
-                <Text style={styles.subtitle}>Advices</Text>
-              </View>
-              <Footer />
-              <Text
-                style={{
-                  position: "absolute",
-                  bottom: 30,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  fontSize: 10,
-                }}
-              >
-                Page {pageNumber} of {totalPages}
+      {/* First Page */}
+      <Page
+        size="A4"
+        style={styles.page}
+        render={({ pageNumber, totalPages }: any) => (
+          <>
+            <Header />
+            <View style={styles.section}>
+              <Text style={styles.title}>Assessment Insights</Text>
+              <Text style={styles.subtitle}>General</Text>
+              <Text style={styles.description}>
+                In this part of the report, you can see the maturity level
+                status.
               </Text>
-            </>
-          )}
-        />
-      ))}
+              {maturityGauge && (
+                <Image style={styles.image} src={maturityGauge} />
+              )}
+              <View style={styles.divider} />
+              <Text style={styles.subtitle}>Chart</Text>
+              {chartImage && <Image style={styles.chart} src={chartImage} />}
+            </View>
+            <Text
+              style={{
+                position: "absolute",
+                bottom: 30,
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontSize: 10,
+              }}
+            >
+              Page {pageNumber} of {totalPages}
+            </Text>
+          </>
+        )}
+      />
+
+      {/* Second Page */}
+      <Page
+        size="A4"
+        style={styles.page}
+        render={({ pageNumber, totalPages }: any) => (
+          <>
+            <Header />
+            <View style={styles.section}>
+              {/* Render additional dynamic content here */}
+              {renderSubjectsTable()}
+            </View>
+            <Text
+              style={{
+                position: "absolute",
+                bottom: 30,
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontSize: 10,
+              }}
+            >
+              Page {pageNumber} of {totalPages}
+            </Text>
+          </>
+        )}
+      />
     </Document>
   );
 };

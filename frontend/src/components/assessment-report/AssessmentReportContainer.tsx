@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Divider, Typography, Button } from "@mui/material";
+import { Box, Divider, Typography, Button, IconButton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import QueryBatchData from "@common/QueryBatchData";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@utils/useQuery";
 import { AssessmentSubjectList } from "./AssessmentSubjectList";
 import { useServiceContext } from "@providers/ServiceProvider";
@@ -19,6 +19,9 @@ import { styles } from "@styles";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import AssessmentReportPDF from "./AssessmentReportPDF";
 import { htmlToImage } from "@utils/htmlToImage";
+import MoreActions from "@common/MoreActions";
+import SettingsIcon from "@mui/icons-material/Settings";
+import useMenu from "@/utils/useMenu";
 
 const AssessmentReportContainer = (props: any) => {
   const { service } = useServiceContext();
@@ -72,6 +75,7 @@ const AssessmentReportContainer = (props: any) => {
       calculateConfidenceLevel();
     }
   }, [queryData.errorObject]);
+  const { spaceId } = useParams();
 
   useEffect(() => {
     if (summaryRef.current) {
@@ -86,8 +90,14 @@ const AssessmentReportContainer = (props: any) => {
       queryBatchData={[queryData, assessmentTotalProgress]}
       renderLoading={() => <LoadingSkeletonOfAssessmentReport />}
       render={([data = {}, progress]) => {
-        const { status, assessment, subjects, topStrengths, topWeaknesses } =
-          data || {};
+        const {
+          status,
+          assessment,
+          subjects,
+          topStrengths,
+          topWeaknesses,
+          assessmentPermissions: { manageable },
+        } = data || {};
         const colorCode = assessment?.color?.code || "#101c32";
         const { assessmentKit, maturityLevel, confidenceValue } =
           assessment || {};
@@ -99,16 +109,51 @@ const AssessmentReportContainer = (props: any) => {
         return (
           <Box m="auto" pb={3} sx={{ px: { xl: 36, lg: 18, xs: 2, sm: 3 } }}>
             <AssessmentReportTitle data={data} colorCode={colorCode} />
-            <Grid container spacing={2} columns={12} mt={0.2}>
+            <Grid container spacing={1} columns={12} mt={0}>
               <Grid item sm={12} xs={12}>
-                <Typography
-                  color="#00365C"
-                  textAlign="left"
-                  variant="headlineLarge"
-                >
-                  <Trans i18nKey="assessmentInsights" />
-                </Typography>
-                <Grid container alignItems="stretch" spacing={5} mt={1}>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography
+                    color="#00365C"
+                    textAlign="left"
+                    variant="headlineLarge"
+                  >
+                    <Trans i18nKey="assessmentInsights" />
+                  </Typography>
+                  <PDFDownloadLink
+                    document={
+                      <AssessmentReportPDF
+                        data={data}
+                        progress={progress}
+                        summaryImage={summaryRef}
+                      />
+                    }
+                    fileName="assessment_report.pdf"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {({ loading }: any) =>
+                      loading ? (
+                        <Button variant="contained" disabled>
+                          Generating PDF...
+                        </Button>
+                      ) : (
+                        <Button variant="contained">Download PDF</Button>
+                      )
+                    }
+                  </PDFDownloadLink>
+                  <Box
+                    sx={{ py: "0.6rem" }}
+                    component={Link}
+                    to={`/${spaceId}/assessments/1/assessmentsettings/${assessmentId}`}
+                  >
+                    <IconButton
+                      data-cy="more-action-btn"
+                      disabled={!manageable}
+                    >
+                      <SettingsIcon fontSize="large" />
+                    </IconButton>
+                  </Box>
+                </Box>
+                <Grid container alignItems="stretch" spacing={2} mt={1}>
                   <Grid item lg={6} md={6} sm={12} xs={12}>
                     <Box
                       display="flex"
@@ -123,16 +168,14 @@ const AssessmentReportContainer = (props: any) => {
                       >
                         <Trans i18nKey="general" />
                       </Typography>
-                      <div ref={summaryRef}>
-                        <AssessmentSummary
-                          expertGroup={expertGroup}
-                          assessmentKit={assessment}
-                          data={data}
-                          progress={totalProgress}
-                          questionCount={questionsCount}
-                          answerCount={answersCount}
-                        />
-                      </div>
+                      <AssessmentSummary
+                        expertGroup={expertGroup}
+                        assessmentKit={assessment}
+                        data={data}
+                        progress={totalProgress}
+                        questionCount={questionsCount}
+                        answerCount={answersCount}
+                      />
                     </Box>
                   </Grid>
                   <Grid item lg={6} md={6} sm={12} xs={12}>
@@ -155,6 +198,7 @@ const AssessmentReportContainer = (props: any) => {
                         maturity_level={maturityLevel}
                         maturity_level_count={assessmentKit?.maturityLevelCount}
                         confidence_value={confidenceValue}
+                        ref={summaryRef}
                       />
                     </Box>
                   </Grid>
@@ -215,35 +259,36 @@ const AssessmentReportContainer = (props: any) => {
                   assessment={assessment}
                 />
               </Grid>
-              <Grid item lg={12} md={12} sm={12} xs={12}>
-                <Box display="flex" justifyContent="center" mt={4}>
-                  <PDFDownloadLink
-                    document={
-                      <AssessmentReportPDF
-                        data={data}
-                        progress={progress}
-                        summaryImage={summaryImage}
-                      />
-                    }
-                    fileName="assessment_report.pdf"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {({ loading }: any) =>
-                      loading ? (
-                        <Button variant="contained" disabled>
-                          Generating PDF...
-                        </Button>
-                      ) : (
-                        <Button variant="contained">Download PDF</Button>
-                      )
-                    }
-                  </PDFDownloadLink>
-                </Box>
-              </Grid>
             </Grid>
           </Box>
         );
       }}
+    />
+  );
+};
+
+const Actions = (props: { assessmentId: string; manageable: boolean }) => {
+  const { assessmentId, manageable } = props;
+  const navigate = useNavigate();
+  const { spaceId } = useParams();
+
+  const assessmentSetting = (e: any) => {
+    navigate({
+      pathname: `/${spaceId}/assessments/1/assessmentsettings/${assessmentId}`,
+    });
+  };
+  return (
+    <MoreActions
+      {...useMenu()}
+      boxProps={{ py: "0.6rem" }}
+      fontSize="large"
+      items={[
+        manageable && {
+          icon: <SettingsIcon style={{ fontSize: "2rem" }} fontSize="large" />,
+          text: <Trans i18nKey="settings" />,
+          onClick: assessmentSetting,
+        },
+      ]}
     />
   );
 };

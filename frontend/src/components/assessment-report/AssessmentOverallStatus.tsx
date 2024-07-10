@@ -9,6 +9,7 @@ import { Gauge } from "@common/charts/Gauge";
 import Title from "@common/Title";
 import { getNumberBaseOnScreen } from "@/utils/returnBasedOnScreen";
 import { t } from "i18next";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
 interface IAssessmentOverallStatusProps {
   status: TStatus;
@@ -18,38 +19,64 @@ interface IAssessmentOverallStatusProps {
   confidence_value?: number;
 }
 
-export const AssessmentOverallStatus = (
-  props: IAssessmentOverallStatusProps
-) => {
-  const {
-    status,
-    subjects_info = [],
-    maturity_level,
-    maturity_level_count,
-    confidence_value,
-  } = props;
-  return (
-    <Box
-      height="100%"
-      sx={{
-        background: "#fff",
-        boxShadow: "0px 0px 8px 0px rgba(0, 0, 0, 0.25)",
-        borderRadius: "32px",
-      }}
-    >
-      <Gauge
-        level_value={maturity_level?.index ?? 0}
-        maturity_level_status={maturity_level?.title}
-        maturity_level_number={maturity_level_count}
-        confidence_value={confidence_value}
-        confidence_text={t("withPercentConfidence")}
-        isMobileScreen={false}
-        hideGuidance={true}
-        height={getNumberBaseOnScreen(340, 440, 440, 360, 360)}
-        mb="-36px"
-        className="insight--report__gauge"
-        maturity_status_guide={t("overallMaturityLevelIs")}
-      />
-    </Box>
-  );
-};
+export const AssessmentOverallStatus = forwardRef(
+  (props: IAssessmentOverallStatusProps, ref: any) => {
+    const {
+      status,
+      subjects_info = [],
+      maturity_level,
+      maturity_level_count,
+      confidence_value,
+    } = props;
+    const totalAttributesLength = subjects_info.reduce((sum, subject) => {
+      return sum + (subject.attributes?.length || 0);
+    }, 0);
+    const chartRef = useRef(null);
+
+    useImperativeHandle(ref, () => ({
+      getChartElement: () => chartRef.current,
+    }));
+
+    return (
+      <Box
+        height="100%"
+        sx={{
+          background: "#fff",
+          boxShadow: "0px 0px 8px 0px rgba(0, 0, 0, 0.25)",
+          borderRadius: "32px",
+        }}
+      >
+        <Box ref={chartRef}>
+          <Gauge
+            level_value={maturity_level?.index ?? 0}
+            maturity_level_status={maturity_level?.title}
+            maturity_level_number={maturity_level_count}
+            confidence_value={confidence_value}
+            confidence_text={t("withPercentConfidence")}
+            isMobileScreen={false}
+            hideGuidance={true}
+            height={getNumberBaseOnScreen(340, 440, 440, 360, 360)}
+            mb="-36px"
+            className="insight--report__gauge"
+            maturity_status_guide={t("overallMaturityLevelIs")}
+          />
+        </Box>
+        <Typography
+          variant="titleMedium"
+          position="absolute"
+          mx="2.5rem"
+          mt="-4rem"
+          maxWidth="390px"
+        >
+          <Trans
+            i18nKey="overallStatusDetails"
+            values={{
+              attributes: totalAttributesLength,
+              subjects: subjects_info.length,
+            }}
+          />
+        </Typography>
+      </Box>
+    );
+  }
+);
