@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { Trans } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import Title from "@common/Title";
 import { useQuestionContext } from "@/providers/QuestionProvider";
 import doneSvg from "@assets/svg/Done.svg";
@@ -18,6 +18,9 @@ import RadioButtonUncheckedRoundedIcon from "@mui/icons-material/RadioButtonUnch
 import RadioButtonCheckedRoundedIcon from "@mui/icons-material/RadioButtonCheckedRounded";
 import QuizRoundedIcon from "@mui/icons-material/QuizRounded";
 import { useEffect, useState } from "react";
+import {ICustomError} from "@utils/CustomError";
+import toastError from "@utils/toastError";
+import {useServiceContext} from "@providers/ServiceProvider";
 
 const QuestionsReview = () => {
   const { questionIndex, questionsInfo, assessmentStatus } =
@@ -35,6 +38,9 @@ export const Review = ({ questions = [], isReviewPage }: any) => {
     useQuestionContext();
   const [answeredQuestions, setAnsweredQuestions] = useState<number>();
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
+  const [Viewable, setViewable] = useState<boolean>(false);
+  const { service } = useServiceContext();
+  const {spaceId,page, assessmentId} = useParams()
   useEffect(() => {
     if (questionsInfo.questions) {
       const answeredQuestionsCount = questionsInfo.questions.filter(
@@ -45,6 +51,26 @@ export const Review = ({ questions = [], isReviewPage }: any) => {
         setIsEmpty(true);
       }
     }
+       (async () => {
+          try {
+              const { data: res } = await service.fetchAssessments(
+                  { spaceId: spaceId, size: 4, page: parseInt(page ?? "1", 10) - 1  },
+                  {}
+              );
+              if (res) {
+                  const { items } : any = res
+                  const filtredViewable = (items.filter((item : any) => item?.id === assessmentId).map((item : any) => item.viewable)).shift()
+                  if(filtredViewable){
+                      setViewable(filtredViewable)
+                  }
+              }
+          } catch (e) {
+              const err = e as ICustomError;
+              toastError(err, { filterByStatus: [404] });
+          }
+      })()
+
+
   }, [questionsInfo]);
   return (
     <Box
@@ -226,16 +252,16 @@ export const Review = ({ questions = [], isReviewPage }: any) => {
               gap: { xs: 1, sm: 4 },
             }}
           >
-            <Button
-              variant="outlined"
-              size="large"
-              component={Link}
-              to={"./../../../insights"}
-              sx={{ fontSize: "1rem" }}
-              // sx={{borderRadius:"32px"}}
-            >
-              <Trans i18nKey="insights" />
-            </Button>
+              {Viewable &&  <Button
+                  variant="outlined"
+                  size="large"
+                  component={Link}
+                  to={"./../../../insights"}
+                  sx={{ fontSize: "1rem" }}
+                  // sx={{borderRadius:"32px"}}
+              >
+                  <Trans i18nKey="insights" />
+              </Button>}
             <Button
               variant="contained"
               size="large"
