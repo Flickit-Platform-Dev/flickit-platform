@@ -797,17 +797,6 @@ export const createService = (
         ...(config ?? {}),
       });
     },
-    fetchUserExpertGroups(
-      args: any,
-      config: AxiosRequestConfig<any> | undefined
-    ) {
-      const { id } = args ?? {};
-
-      return axios.get(`/baseinfo/expertgroups/`, {
-        ...(config ?? {}),
-        params: { user_id: id },
-      });
-    },
     fetchExpertGroups(
       args: { page: number; size: number },
       config: AxiosRequestConfig<any> | undefined
