@@ -6,5 +6,4 @@
     "application/x-rar-compressed": [".x-rar-compressed"],
     "application/tar": [".tar"],
     "application/vnd": [".openxmlformats-officedocument", ".wordprocessingml", ".document", ".oasis", ".opendocument", ".text", ".spreadsheetml", "spreadsheet", ".sheet"],
-    "application/x-zip": [".x-zip"], "application/zip": [".zip"]
  }

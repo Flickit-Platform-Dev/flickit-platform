@@ -1761,6 +1761,7 @@ const EvidenceAttachmentsDialogs = (props: any) => {
             onClose={() => {
                 onClose();
                 setDropZone(null)
+                setDescription("")
             }}
             maxWidth={"sm"}
             // fullScreen={fullScreen}
@@ -1798,7 +1799,7 @@ const EvidenceAttachmentsDialogs = (props: any) => {
                     <Trans i18nKey="uploadAttachment" />
                 </Box>
                 <ClearIcon
-                    onClick={() => { onClose(); setDropZone(null) }}
+                    onClick={() => { onClose(); setDropZone(null);setDescription("") }}
                     style={{ color: "#fff" }}
                     sx={{
                         position: "absolute", width: "25px", height: "25px", right: "17px", top: "25px",
