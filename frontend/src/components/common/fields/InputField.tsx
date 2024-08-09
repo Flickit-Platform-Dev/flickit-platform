@@ -27,6 +27,7 @@ interface IInputFieldUCProps extends Omit<OutlinedTextFieldProps, "variant"> {
   setValueCount?: any,
   hasCounter?: boolean,
   isFarsi?: boolean,
+  isEditing?: boolean,
 }
 
 const InputFieldUC = (props: IInputFieldUCProps) => {
@@ -44,6 +45,7 @@ const InputFieldUC = (props: IInputFieldUCProps) => {
     setValueCount,
     hasCounter,
     isFarsi,
+    isEditing,
     ...rest
   } = props;
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -106,34 +108,33 @@ const InputFieldUC = (props: IInputFieldUCProps) => {
           "&.Mui-focused fieldset": {
             borderColor: pallet?.borderColor,
           },
+          paddingTop: isEditing ? "32px" : ""
         },
       }}
       InputLabelProps={{ ...InputLabelProps, required }}
       InputProps={
         type === "password"
           ? {
-            endAdornment: (
-              <InputAdornment
-                sx={{ cursor: "pointer" }}
-                position="end"
-                onClick={toggleShowPassword}
-                onMouseDown={(e: any) => {
-                  e.preventDefault();
-                }}
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </InputAdornment>
-            ),
-          }
-          : {
-            style: hasCounter ? isFarsi ? {
-              paddingLeft: 90,
-              minHeight: "110px"
-            } : {
-              paddingRight: 90,
-              minHeight: "110px"
-            } : {}
-          }
+              endAdornment: (
+                <InputAdornment
+                  sx={{ cursor: "pointer" }}
+                  position="end"
+                  onClick={toggleShowPassword}
+                  onMouseDown={(e: any) => {
+                    e.preventDefault();
+                  }}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </InputAdornment>
+              ),
+            }
+          : {  style:hasCounter ? isFarsi ? {
+                paddingLeft: 60,
+                minHeight: "110px"
+              }:{
+                paddingRight: 60,
+                minHeight: "110px"
+              } : {} }
       }
       error={hasError}
       helperText={(errorMessage as ReactNode) || helperText}

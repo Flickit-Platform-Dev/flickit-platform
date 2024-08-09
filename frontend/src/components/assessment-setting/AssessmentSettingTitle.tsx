@@ -2,17 +2,18 @@ import React, { useEffect } from "react";
 import Title from "@common/TitleComponent";
 import SupTitleBreadcrumb from "@/components/common/SupTitleBreadcrumb";
 import { useParams } from "react-router-dom";
+import { t } from "i18next";
 
 interface IAssessmentAccessManagementTitle {
   pathInfo: {
-      space: {
-          id: number,
-          title: string
-      },
-      assessment: {
-          id: string,
-          title: string
-      }
+    space: {
+      id: number;
+      title: string;
+    };
+    assessment: {
+      id: string;
+      title: string;
+    };
   };
 }
 
@@ -38,7 +39,11 @@ const AssessmentSettingTitle = (props: IAssessmentAccessManagementTitle) => {
               to: `/${spaceId}/assessments/${page}`,
             },
             {
-              title: assessment?.title,
+              title: `${assessment?.title} ${t("insights")}`,
+              to: `/${spaceId}/assessments/${page}/${assessment.id}/insights`,
+            },
+            {
+              title: t("assessmentSettings") as string,
             },
           ]}
           displayChip

@@ -3,7 +3,7 @@ import { Box, Button, Typography, Alert } from "@mui/material";
 import { useServiceContext } from "@providers/ServiceProvider";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@utils/useQuery";
-import Title from "@common/Title";
+import Title from "@common/TitleComponent";
 import { Trans } from "react-i18next";
 import Tab from "@mui/material/Tab";
 import TabList from "@mui/lab/TabList";
@@ -45,6 +45,7 @@ const AssessmentKitExpertViewContainer = () => {
   const dialogProps = useDialog();
   const { userInfo } = useAuthContext();
   const { config } = useConfigContext();
+  const [update,setForceUpdate]= useState<boolean>(false)
   const userId = userInfo.id;
   const { expertGroupId } = useParams();
   const [details, setDetails] = useState<AssessmentKitDetailsType>();
@@ -77,7 +78,7 @@ const AssessmentKitExpertViewContainer = () => {
     if (!loaded) {
       AssessmentKitDetails();
     }
-  }, [loaded]);
+  }, [loaded,update]);
   useEffect(() => {
     setDocumentTitle(
       `${t("assessmentKit")}: ${assessmentKitTitle || ""}`,
@@ -87,76 +88,84 @@ const AssessmentKitExpertViewContainer = () => {
   return (
     <Box>
       <Box sx={{ flexDirection: { xs: "column", sm: "row" } }}>
-        <Title
-          backLink={-1}
-          sup={
-            <SupTitleBreadcrumb
-              routes={[
-                {
-                  title: t("expertGroups") as string,
-                  to: `/user/expert-groups`,
-                },
-                {
-                  title: expertGroup?.title,
-                  to: `/user/expert-groups/${expertGroupId}`,
-                },
-                {
-                  title: assessmentKitTitle,
-                  to: `/user/expert-groups`,
-                },
-              ]}
-            />
-          }
-          toolbar={
-            <Box>
-              <Button
-                variant="contained"
-                size="small"
-                sx={{ ml: 2 }}
-                onClick={() => {
-                  dialogProps.openDialog({});
-                }}
-              >
-                <Typography mr={1} variant="button">
-                  <Trans i18nKey="updateDSL" />
-                </Typography>
-                <CloudUploadRoundedIcon />
-              </Button>
-              <Button
-                variant="contained"
-                size="small"
-                sx={{ ml: 2 }}
-                onClick={handleDownload}
-              >
-                <Typography mr={1} variant="button">
-                  <Trans i18nKey="downloadDSL" />
-                </Typography>
-                <CloudDownloadRoundedIcon />
-              </Button>
-            </Box>
-          }
-        >
-          {assessmentKitTitle}
-        </Title>
+          {expertGroup && <Title
+              backLink={"/"}
+              size="large"
+              wrapperProps={{
+                  sx: {
+                      flexDirection: { xs: "column", md: "row" },
+                      alignItems: { xs: "flex-start", md: "flex-end" },
+                  },
+              }}
+              sup={
+                  <SupTitleBreadcrumb
+                      routes={[
+                          {
+                              title: t("expertGroups") as string,
+                              to: `/user/expert-groups`,
+                          },
+                          {
+                              title: expertGroup?.title,
+                              to: `/user/expert-groups/${expertGroupId}`,
+                          },
+                          {
+                              title: assessmentKitTitle,
+                              to: `/user/expert-groups`,
+                          },
+                      ]}
+                      displayChip
+                  />
+              }
+              toolbar={
+                  <Box>
+                      <Button
+                          variant="contained"
+                          size="small"
+                          sx={{ ml: 2 }}
+                          onClick={() => {
+                              dialogProps.openDialog({});
+                          }}
+                      >
+                          <Typography mr={1} variant="button">
+                              <Trans i18nKey="updateDSL" />
+                          </Typography>
+                          <CloudUploadRoundedIcon />
+                      </Button>
+                      <Button
+                          variant="contained"
+                          size="small"
+                          sx={{ ml: 2 }}
+                          onClick={handleDownload}
+                      >
+                          <Typography mr={1} variant="button">
+                              <Trans i18nKey="downloadDSL" />
+                          </Typography>
+                          <CloudDownloadRoundedIcon />
+                      </Button>
+                  </Box>
+              }
+          >
+              {assessmentKitTitle}
+          </Title>}
         <Box mt={3}>
           <AssessmentKitSectionGeneralInfo
             setExpertGroup={setExpertGroup}
             setAssessmentKitTitle={setAssessmentKitTitle}
           />
-          <UpdateAssessmentKitDialog {...dialogProps} />
-          <AssessmentKitSectionsTabs details={details} />
+          <UpdateAssessmentKitDialog setForceUpdate={setForceUpdate} {...dialogProps} />
+          <AssessmentKitSectionsTabs update={update}  details={details} />
         </Box>
       </Box>
     </Box>
   );
 };
-const AssessmentKitSectionsTabs = (props: { details: any }) => {
+const AssessmentKitSectionsTabs = (props: { details: any, update:boolean }) => {
   const { fetchAssessmentKitDetailsQuery } = useAssessmentKit();
   const [value, setValue] = useState("maturityLevels");
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
-  const { details } = props;
+  const { details, update } = props;
   return (
     <Box mt={6}>
       {details && (
@@ -190,27 +199,27 @@ const AssessmentKitSectionsTabs = (props: { details: any }) => {
             </TabList>
           </Box>
           <TabPanel value="subjects" sx={{ py: { xs: 1, sm: 3 }, px: 0.2 }}>
-            <AssessmentKitSubjects details={details.subjects} />
+            <AssessmentKitSubjects details={details.subjects} update={update} />
           </TabPanel>
           <TabPanel
             value="questionnaires"
             sx={{ py: { xs: 1, sm: 3 }, px: 0.2 }}
           >
-            <AssessmentKitQuestionnaires details={details.questionnaires} />
+            <AssessmentKitQuestionnaires update={update} details={details.questionnaires} />
           </TabPanel>
           <TabPanel
             value="maturityLevels"
             sx={{ py: { xs: 1, sm: 3 }, px: 0.2 }}
           >
-            <MaturityLevelsDetails maturity_levels={details?.maturityLevels} />
+            <MaturityLevelsDetails maturity_levels={details?.maturityLevels} update={update} />
           </TabPanel>
         </TabContext>
       )}
     </Box>
   );
 };
-const AssessmentKitSubjects = (props: { details: any[] }) => {
-  const { details } = props;
+const AssessmentKitSubjects = (props: { details: any[], update: boolean }) => {
+  const { details, update } = props;
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const [assessmentKitSubjectDetails, setAssessmentKitSubjectDetails] =
     useState<any>();
@@ -229,7 +238,7 @@ const AssessmentKitSubjects = (props: { details: any[] }) => {
     if (subjectId) {
       fetchAssessmentKitSubjectDetail();
     }
-  }, [subjectId]);
+  }, [subjectId,update]);
   const fetchAssessmentKitSubjectDetail = async () => {
     try {
       const data = await fetchAssessmentKitSubjectDetailsQuery.query({
@@ -237,7 +246,7 @@ const AssessmentKitSubjects = (props: { details: any[] }) => {
         subjectId: subjectId,
       });
       setAssessmentKitSubjectDetails(data);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   return (
@@ -405,8 +414,8 @@ const AssessmentKitSubjects = (props: { details: any[] }) => {
     </Box>
   );
 };
-const AssessmentKitQuestionnaires = (props: { details: any[] }) => {
-  const { details } = props;
+const AssessmentKitQuestionnaires = (props: { details: any[], update:boolean }) => {
+  const { details, update } = props;
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const [questionnaireId, setQuestionnaireId] = useState<any>();
   const [questionnaireDetails, setQuestionnaireDetails] = useState<any>();
@@ -421,7 +430,7 @@ const AssessmentKitQuestionnaires = (props: { details: any[] }) => {
     if (questionnaireId) {
       fetchAssessmentKitQuestionnaires();
     }
-  }, [questionnaireId]);
+  }, [questionnaireId,update]);
   const fetchAssessmentKitQuestionnaires = async () => {
     try {
       const data = await fetchAssessmentKitQuestionnairesQuery.query({
@@ -429,7 +438,7 @@ const AssessmentKitQuestionnaires = (props: { details: any[] }) => {
         questionnaireId: questionnaireId,
       });
       setQuestionnaireDetails(data);
-    } catch (e) {}
+    } catch (e) { }
   };
   return (
     <Box>
@@ -566,7 +575,7 @@ const AssessmentKitQuestionsList = (props: {
         attributeId: attributeId,
       });
       setAttributesDetails(data);
-    } catch (e) {}
+    } catch (e) { }
   };
   const fetchMaturityLevelQuestions = async () => {
     try {
@@ -576,7 +585,7 @@ const AssessmentKitQuestionsList = (props: {
         maturityLevelId: value,
       });
       setMaturityLevelQuestions(data);
-    } catch (e) {}
+    } catch (e) { }
   };
   useEffect(() => {
     if (isExpanded && attributeId) {
@@ -668,9 +677,8 @@ const AssessmentKitQuestionsList = (props: {
               onChange={handleTabChange}
               sx={{
                 "& .MuiTabs-indicator": {
-                  backgroundColor: `${
-                    colorPallet[selectedTabIndex ? selectedTabIndex : 0]
-                  } !important`,
+                  backgroundColor: `${colorPallet[selectedTabIndex ? selectedTabIndex : 0]
+                    } !important`,
                 },
               }}
             >
@@ -872,7 +880,7 @@ const AssessmentKitQuestionsList = (props: {
   );
 };
 const UpdateAssessmentKitDialog = (props: any) => {
-  const { onClose: closeDialog, ...rest } = props;
+  const { onClose: closeDialog,setForceUpdate, ...rest } = props;
   const [loading, setLoading] = useState(false);
 
   const { service } = useServiceContext();
@@ -900,7 +908,7 @@ const UpdateAssessmentKitDialog = (props: any) => {
     event.preventDefault();
     const { dsl_id, ...restOfData } = data;
     const formattedData = {
-      dsl_id: dsl_id.kitDslId,
+      kitDslId: dsl_id.kitDslId,
       ...restOfData,
     };
     setLoading(true);
@@ -909,6 +917,7 @@ const UpdateAssessmentKitDialog = (props: any) => {
         { data: formattedData, assessmentKitId: assessmentKitId },
         { signal: abortController.signal }
       );
+      setForceUpdate((prev : boolean) => !prev)
       setLoading(false);
       close();
     } catch (e: any) {
@@ -975,6 +984,8 @@ const UpdateAssessmentKitDialog = (props: any) => {
             required={true}
             label={<Trans i18nKey="dsl" />}
             maxSize={convertToBytes(5, "MB")}
+            setSyntaxErrorObject={setSyntaxErrorObject}
+            setShowErrorLog={setShowErrorLog}
           />
         </Box>
       </Grid>
@@ -1298,7 +1309,7 @@ const QuestionnairesQuestionList = (props: any) => {
         questionId: questionId,
       });
       setQuestionsDetails(data);
-    } catch (e) {}
+    } catch (e) { }
   };
   function formatNumber(value: any) {
     // Check if the value is an integer (no decimal places)
@@ -1492,9 +1503,8 @@ const QuestionnairesQuestionList = (props: any) => {
                               sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
-                                borderTop: `${
-                                  index !== 0 && "1px solid #D3D3D3"
-                                }`,
+                                borderTop: `${index !== 0 && "1px solid #D3D3D3"
+                                  }`,
                                 py: 1,
                               }}
                             >
@@ -1607,7 +1617,7 @@ const QuestionnairesQuestionList = (props: any) => {
   );
 };
 const MaturityLevelsDetails = (props: any) => {
-  const { maturity_levels } = props;
+  const { maturity_levels, update } = props;
   const colorPallet = getMaturityLevelColors(
     maturity_levels ? maturity_levels.length : 5
   );

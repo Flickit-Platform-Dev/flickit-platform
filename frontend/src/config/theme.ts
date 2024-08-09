@@ -10,11 +10,12 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { getNumberBaseOnScreen } from "@/utils/returnBasedOnScreen";
 
-export const customFontFamily = '"Roboto","Helvetica","Arial","sans-serif","Vazirmatn"';
-export const customHeaderFamily = 'Oswald, Roboto, Vazirmatn'
+export const customFontFamily =
+  '"Roboto","Helvetica","Arial","sans-serif","Vazirmatn"';
+export const customHeaderFamily = "Oswald, Roboto, Vazirmatn";
 const fontSize = ["12px", "14px", "14px", "16px", "16px"];
-export const primaryFontFamily = 'Ubuntu'
-export const secondaryFontFamily = 'Sansation'
+export const primaryFontFamily = "Ubuntu";
+export const secondaryFontFamily = "Sansation";
 
 declare module "@mui/material/styles/createPalette" {
   interface TypeBackground {
@@ -44,6 +45,9 @@ declare module "@mui/material/styles" {
     labelSmall: React.CSSProperties;
     labelMedium: React.CSSProperties;
     labelLarge: React.CSSProperties;
+    subSmall: React.CSSProperties;
+    subMedium: React.CSSProperties;
+    subLarge: React.CSSProperties;
   }
 
   interface TypographyVariantsOptions {
@@ -62,6 +66,9 @@ declare module "@mui/material/styles" {
     labelSmall?: React.CSSProperties;
     labelMedium?: React.CSSProperties;
     labelLarge?: React.CSSProperties;
+    subSmall?: React.CSSProperties;
+    subMedium?: React.CSSProperties;
+    subLarge?: React.CSSProperties;
   }
 
   interface Palette {
@@ -88,6 +95,9 @@ declare module "@mui/material/Typography" {
     labelSmall?: true;
     labelMedium?: true;
     labelLarge?: true;
+    subSmall?: true;
+    subMedium?: true;
+    subLarge?: true;
   }
 }
 
@@ -103,6 +113,15 @@ const palette = createPalette({
 
 export const theme = createTheme({
   palette,
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
   typography: {
     fontFamily: customFontFamily,
     headlineSmall: {
@@ -185,6 +204,110 @@ export const theme = createTheme({
       lineHeight: "1.125rem",
       letterSpacing: "0.1px"
     },
+    headlineSmall: {
+      fontFamily: primaryFontFamily,
+      fontWeight: 500,
+      fontSize: "1.5rem",
+      lineHeight: "2rem",
+      letterSpacing: "-3%",
+    },
+    headlineMedium: {
+      fontFamily: primaryFontFamily,
+      fontWeight: "bold",
+      fontSize: "2rem",
+      lineHeight: "2.25rem",
+      letterSpacing: "0",
+    },
+    headlineLarge: {
+      fontFamily: primaryFontFamily,
+      fontWeight: "bold",
+      fontSize: "2.5rem",
+      lineHeight: "2.7rem",
+      letterSpacing: "0",
+    },
+    displaySmall: {
+      fontFamily: primaryFontFamily,
+      fontSize: "1rem",
+      fontWeight: "normal",
+      letterSpacing: "0",
+    },
+    displayMedium: {
+      fontFamily: customFontFamily,
+      fontSize: "1.75rem",
+      fontWeight: "lighter",
+      lineHeight: "2.25rem",
+      letterSpacing: "0",
+    },
+    displayLarge: {
+      fontFamily: secondaryFontFamily,
+      fontSize: "4rem",
+      fontWeight: "bold",
+      lineHeight: "5.75rem",
+      letterSpacing: "0",
+    },
+    titleSmall: {
+      fontFamily: primaryFontFamily,
+      fontWeight: 600,
+      fontSize: "0.875rem",
+      lineHeight: "1.25rem",
+      letterSpacing: ".1px",
+    },
+    titleMedium: {
+      fontFamily: primaryFontFamily,
+      fontWeight: 600,
+      fontSize: "1rem",
+      lineHeight: "1.5rem",
+      letterSpacing: ".15px",
+    },
+    titleLarge: {
+      fontFamily: primaryFontFamily,
+      fontWeight: 500,
+      fontSize: "1.375rem",
+      lineHeight: "1.75rem",
+      letterSpacing: "0",
+    },
+    bodySmall: {
+      fontFamily: primaryFontFamily,
+      fontWeight: "normal",
+      fontSize: "0.75rem",
+      lineHeight: "1rem",
+      letterSpacing: "0.4px",
+    },
+    bodyMedium: {
+      fontFamily: primaryFontFamily,
+      fontWeight: 200,
+      fontSize: "0.875rem",
+      lineHeight: "1.125rem",
+      letterSpacing: "0.25px",
+    },
+    bodyLarge: {
+      fontFamily: primaryFontFamily,
+      fontWeight: "lighter",
+      fontSize: "1rem",
+      lineHeight: "1.5rem",
+      letterSpacing: "0.5px",
+    },
+    labelSmall: {
+      fontFamily: primaryFontFamily,
+      fontWeight: "lighter",
+      fontSize: "0.6875rem",
+      lineHeight: "0.75rem",
+      letterSpacing: "0.5px",
+    },
+    labelMedium: {
+      fontFamily: primaryFontFamily,
+      fontWeight: 500,
+      fontSize: "0.75rem",
+      lineHeight: "1rem",
+      letterSpacing: "0.5px",
+    },
+    labelLarge: {
+      fontFamily: primaryFontFamily,
+      fontWeight: "bold",
+      fontSize: "0.875rem",
+      lineHeight: "1.125rem",
+      letterSpacing: "0.1px",
+    },
     button: {
       fontFamily: customHeaderFamily,
       letterSpacing: ".1em",
@@ -238,6 +361,11 @@ export const theme = createTheme({
           background: #EDEFF1;
         }
       `,
+    },
+    MuiButtonGroup: {
+      defaultProps: {
+        color: "primary",
+      },
     },
     MuiTypography: {
       defaultProps: {

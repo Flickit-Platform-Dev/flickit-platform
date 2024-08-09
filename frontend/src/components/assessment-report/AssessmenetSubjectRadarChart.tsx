@@ -5,14 +5,13 @@ import {
   PolarRadiusAxis,
   RadarChart,
   ResponsiveContainer,
-  Text,
   Radar,
   Legend,
 } from "recharts";
 import Skeleton from "@mui/material/Skeleton";
 import { t } from "i18next";
-import convertToSubjectChartData from "@/utils/convertToSubjectChartData";
 import convertToAssessmentChartData from "@/utils/convertToAssessmentChartData";
+import { useTheme } from "@mui/material";
 
 interface AssessmentSubjectRadarChartProps {
   loading: boolean;
@@ -40,28 +39,53 @@ interface SubjectRadarProps {
   maturityLevelsCount: number;
 }
 
+const breakTextIntoLines = (text: string, maxLineLength: number) => {
+  const words = text.split(" ");
+  let lines = [];
+  let currentLine = words[0];
+
+  for (let i = 1; i < words.length; i++) {
+    if ((currentLine + " " + words[i]).length <= maxLineLength) {
+      currentLine += " " + words[i];
+    } else {
+      lines.push(currentLine);
+      currentLine = words[i];
+    }
+  }
+  lines.push(currentLine);
+  return lines;
+};
+
 const SubjectRadar: React.FC<SubjectRadarProps> = ({
   data,
   maturityLevelsCount,
 }) => {
+  const theme = useTheme();
   const chartData = useMemo(() => convertToAssessmentChartData(data), [data]);
+  const maxLineLength = 24; 
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height={400}>
       <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
         <PolarGrid />
         <PolarAngleAxis
           dataKey="title"
           tick={({ payload, x, y, cx, cy, ...rest }: any) => {
+            const lines = breakTextIntoLines(payload.value, maxLineLength);
             return (
-              <Text
-                {...rest}
-                verticalAnchor="middle"
-                y={y + (y - cy) / 15}
-                x={x + (x - cx) / 15}
-                fontSize="0.75rem"
-              >
-                {payload.value}
-              </Text>
+              <g>
+                {lines.map((line, index) => (
+                  <text
+                    key={index}
+                    {...rest}
+                    y={y + (y - cy) / 15 + index * 12} 
+                    x={x + (x - cx) / 15}
+                    style={{ ...theme.typography.labelSmall }}
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
             );
           }}
         />
@@ -75,12 +99,12 @@ const SubjectRadar: React.FC<SubjectRadarProps> = ({
         <Radar
           name={t("maturityLevel") as string}
           dataKey="ml"
-          stroke="#00365C"
-          fill="#00365C"
+          stroke="#9CCAFF"
+          fill="#9CCAFF"
           fillOpacity={0.5}
           isAnimationActive={true}
         />
-        <Legend wrapperStyle={{ paddingTop: 20 }} />{" "}
+        <Legend wrapperStyle={{ paddingTop: 20 }} />
       </RadarChart>
     </ResponsiveContainer>
   );

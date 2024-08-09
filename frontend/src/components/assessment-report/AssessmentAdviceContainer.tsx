@@ -1,9 +1,9 @@
 import Title from "@common/Title";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Trans } from "react-i18next";
 import AdviceSlider from "../common/AdviceSlider";
 import Box from "@mui/material/Box";
-import { Button, Divider, Grid, IconButton } from "@mui/material";
+import { Button, Divider, Grid, IconButton, Tooltip } from "@mui/material";
 import EmptyAdvice from "@assets/img/emptyAdvice.gif";
 import BetaSvg from "@assets/svg/beta.svg";
 import Dialog from "@mui/material/Dialog";
@@ -63,6 +63,12 @@ const AssessmentAdviceContainer = (props: any) => {
   const attributeColorPallet = ["#D81E5B", "#F9A03F", "#0A2342"];
   const attributeBGColorPallet = ["#FDF1F5", "#FEF5EB", "#EDF4FC"];
   const fullScreen = useScreenResize("sm");
+  const filteredMaturityLevels = useMemo(() => {
+    const filteredData = assessment?.assessmentKit?.maturityLevels.sort(
+      (elem1: any, elem2: any) => elem1.index - elem2.index
+    );
+    return filteredData;
+  }, [assessment]);
   return (
     <div>
       <Dialog
@@ -86,7 +92,7 @@ const AssessmentAdviceContainer = (props: any) => {
           sx={{
             padding: "0!important",
             background: "#004F83",
-            overflowX: "hidden",
+            overflow: "hidden",
           }}
         >
           <Box
@@ -207,6 +213,9 @@ const AssessmentAdviceContainer = (props: any) => {
                 borderRadius: { xs: 0, sm: "0 0 32px 32px" },
                 background: "#fff",
                 py: 8,
+                maxHeight: "60vh",
+                overflow: "auto",
+                overflowX: "hidden",
               }}
             >
               {subjects.map((subject: any) =>
@@ -217,7 +226,7 @@ const AssessmentAdviceContainer = (props: any) => {
                     currentState={attribute?.maturityLevel}
                     attribute={attribute}
                     subject={subject}
-                    maturityLevels={assessment?.assessmentKit?.maturityLevels}
+                    maturityLevels={filteredMaturityLevels}
                     target={target}
                     setTarget={setTarget}
                   />
@@ -468,7 +477,13 @@ const AssessmentAdviceContainer = (props: any) => {
                         whiteSpace: "normal",
                       }}
                     >
-                      {question?.title}
+                      <Tooltip
+                        title={
+                          question?.title.length > 100 ? question?.title : ""
+                        }
+                      >
+                        <Box>{question?.title}</Box>
+                      </Tooltip>
                     </Grid>
                     <Grid
                       item

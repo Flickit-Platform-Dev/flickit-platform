@@ -13,7 +13,7 @@ interface ITitle extends Omit<TypographyProps, "borderBottom"> {
   sub?: JSX.Element | string;
   borderBottom?: string | boolean;
   toolbar?: JSX.Element;
-  backLink?: To | -1;
+  backLink?: To | "/";
   backIconProps?: SvgIconProps;
   size?: "small" | "medium" | "large";
   wrapperProps?: BoxProps;
@@ -69,7 +69,7 @@ const Title = (props: ITitle) => {
         sx={{ flex: 1 }}
         {...rest}
         width="100%"
-        alignItems="center"
+        alignItems="start"
         display="flex"
         flexDirection="column"
       >
@@ -77,17 +77,17 @@ const Title = (props: ITitle) => {
           <Box display="flex" justifyContent={"flex-start"}>
             <Box
               minWidth="40px"
+              marginTop="0.5rem"
               sx={{
                 ...styles.centerV,
                 textDecoration: "none",
-                ml: sup ? { xs: 0, md: "-22px" } : "-4px",
               }}
             >
               <Box
                 component={RLink}
                 to={backLink as To}
                 display="flex"
-                sx={{ textDecoration: "none" }}
+                sx={{ textDecoration: "none", color: "inherit" }}
               >
                 {backLink === "/" ? (
                   <GoHome fontSize="22px" color="#9DA7B3" {...backIconProps} />
@@ -104,13 +104,7 @@ const Title = (props: ITitle) => {
               {sup && (
                 <Typography
                   textTransform="uppercase"
-                  variant={
-                    size === "small"
-                      ? "subSmall"
-                      : size === "large"
-                      ? "subLarge"
-                      : "subMedium"
-                  }
+                  variant="bodyLarge"
                   lineHeight={0}
                 >
                   {sup}
@@ -121,13 +115,7 @@ const Title = (props: ITitle) => {
         ) : sup ? (
           <Typography
             textTransform="uppercase"
-            variant={
-              size === "small"
-                ? "subSmall"
-                : size === "large"
-                ? "subLarge"
-                : "subMedium"
-            }
+            variant="bodyLarge"
             {...subProps}
           >
             {sup}
@@ -152,9 +140,12 @@ const Title = (props: ITitle) => {
         )}
 
         <Typography
-          variant={size === "small" ? "h6" : size === "large" ? "h4" : "h5"}
-          textTransform="uppercase"
-          fontWeight="bold"
+          textTransform={size === "large" ? "inherit" : "uppercase"}
+          fontWeight="Bold"
+          variant={
+            size === "small" ? "h6" : size === "large" ? "headlineLarge" : "h5"
+          }
+          color={size === "large" ? "#00365C" : "inherit"}
           {...titleProps}
           sx={{
             ...styles.centerV,

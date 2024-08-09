@@ -59,16 +59,10 @@ const ColorfulProgress = (props: ISubjectProgressProps) => {
   }
 
   return (
-    <Box sx={{ ...styles.centerCVH }} gap={3} width="100%">
+    <Box sx={{ ...styles.centerCVH }} gap={1} width="100%">
       {type === ProgessBarTypes.Questioannaire && (
         <Box display="flex" textAlign="center" color="#9DA7B3" fontWeight={800}>
-          <Typography
-            component="span"
-            fontSize="1rem"
-            color="#6C7B8E"
-            fontWeight={500}
-            lineHeight={2}
-          >
+          <Typography variant="titleMedium" color="#73808C" p="2px">
             <Trans i18nKey="answeredQuestions" />
           </Typography>
           <Typography
@@ -85,7 +79,7 @@ const ColorfulProgress = (props: ISubjectProgressProps) => {
           </Typography>
         </Box>
       )}
-      <Box display="flex" width="100%" alignItems="center">
+      <Box display="flex" width="100%" alignItems="center" position="relative">
         <LinearProgress
           sx={{
             borderRadius: 3,
@@ -100,10 +94,9 @@ const ColorfulProgress = (props: ISubjectProgressProps) => {
         />{" "}
         {guideText && (
           <Typography
-            component="span"
+            variant="titleMedium"
             color="white"
             fontWeight={500}
-            fontSize="0.8rem"
             textAlign="center"
             sx={{
               position: "absolute",
@@ -118,18 +111,27 @@ const ColorfulProgress = (props: ISubjectProgressProps) => {
         )}
         <Box width="1rem">
           {displayPercent && numaratur !== null && (
-            <Typography
-              component="span"
-              color={percentColor}
-              mx="0.5rem"
-              fontWeight={300}
-              fontSize={{ md: "1rem", xs: "0.7rem" }}
-            >
+            <Typography variant="titleLarge" color={percentColor} mx="0.5rem">
               {totalProgress != null && Math.ceil(totalProgress)}
               {totalProgress != null ? "%" : ""}
             </Typography>
           )}
         </Box>
+        {totalProgress != null && Math.ceil(totalProgress) !== 100 && (
+          <Typography
+            variant="titleMedium"
+            color="#fff"
+            fontWeight={500}
+            sx={{
+              position: "absolute",
+              width: "100%",
+              top: "50%",
+              transform: "translateY(-50%)",
+            }}
+          >
+            <Trans i18nKey="completeNow" />
+          </Typography>
+        )}
       </Box>
     </Box>
   );

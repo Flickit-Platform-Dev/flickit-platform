@@ -51,12 +51,13 @@ const toastError = (
     const axiosError = err as AxiosError;
     status = axiosError.response?.status;
     data = axiosError.response?.data;
+    type = axiosError.code as ECustomErrorType;
     message = axiosError.message;
   } else {
     const customError = err as ICustomError;
     status = customError.response?.status;
     data = customError.response?.data;
-    type = customError.code as ECustomErrorType; 
+    type = customError.code as ECustomErrorType;
     message = customError.message;
   }
 
@@ -88,7 +89,8 @@ const toastError = (
   if (
     status === 401 ||
     type === ECustomErrorType.INVALID_TOKEN ||
-    type === ECustomErrorType.CANCELED
+    type === ECustomErrorType.CANCELED ||
+    type === undefined
   ) {
     return;
   }

@@ -82,13 +82,13 @@ const AssessmentKitCEFromDialog = (props: IAssessmentKitCEFromDialogProps) => {
       const { data: res } =
         type === "update"
           ? await service.updateAssessmentKit(
-              { data: formattedData, assessmentKitId: id },
-              { signal: abortController.signal }
-            )
+            { data: formattedData, assessmentKitId: id },
+            { signal: abortController.signal }
+          )
           : await service.createAssessmentKit(
-              { data: formattedData },
-              { signal: abortController.signal }
-            );
+            { data: formattedData },
+            { signal: abortController.signal }
+          );
       setLoading(false);
       onSubmitForm();
       close();

@@ -9,6 +9,7 @@ import {
   Typography,
   Divider,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Trans } from "react-i18next";
@@ -25,13 +26,14 @@ import convertToSubjectChartData from "@/utils/convertToSubjectChartData";
 import AssessmentSubjectRadarChart from "./AssessmenetSubjectRadarChart";
 import ConfidenceLevel from "@/utils/confidenceLevel/confidenceLevel";
 import AssessmentSubjectRadialChart from "./AssessmenetSubjectRadial";
-import { customFontFamily } from "@/config/theme";
+import { t } from "i18next";
 
 interface IAssessmentSubjectCardProps extends ISubjectInfo {
   colorCode: string;
   maturity_level?: IMaturityLevel;
   confidenceValue?: number;
   attributes?: any;
+  maturityLevelCount?: number;
 }
 
 interface IAssessmentSubjectProgress {
@@ -47,6 +49,7 @@ export const AssessmentSubjectAccordion = (
   const {
     title,
     maturityLevel,
+    maturityLevelCount,
     confidenceValue,
     id,
     colorCode,
@@ -88,6 +91,8 @@ export const AssessmentSubjectAccordion = (
     setSubjectAttributes(attributes);
   };
 
+  const theme = useTheme();
+
   const handleAccordionChange = (
     event: React.SyntheticEvent,
     isExpanded: boolean
@@ -117,6 +122,7 @@ export const AssessmentSubjectAccordion = (
           borderTopLeftRadius: "32px !important",
           borderTopRightRadius: "32px !important",
           textAlign: "center",
+          paddingBottom: 2,
           backgroundColor: expanded ? "rgba(10, 35, 66, 0.07)" : "",
           "& .MuiAccordionSummary-content": {
             maxHeight: { md: "160px", lg: "160px" },
@@ -125,7 +131,13 @@ export const AssessmentSubjectAccordion = (
         }}
       >
         <Grid container alignItems="center">
-          <Grid item xs={12} lg={2.8} md={2.8} sm={12}>
+          <Grid
+            item
+            xs={12}
+            lg={description ? 2.4 : 3.4}
+            md={description ? 2.4 : 3.4}
+            sm={12}
+          >
             <Box
               sx={{
                 overflow: "hidden",
@@ -135,20 +147,26 @@ export const AssessmentSubjectAccordion = (
               }}
             >
               <Typography
-                color="#3B4F68"
+                color="#243342"
                 sx={{
                   textTransform: "none",
                   whiteSpace: "pre-wrap",
-                  fontSize: "1.75rem",
                 }}
-                fontWeight={700}
+                variant="headlineMedium"
               >
                 {title}
               </Typography>
             </Box>
           </Grid>
+
           {!isMobileScreen && (
-            <Grid item xs={12} lg={4.2} md={4.2} sm={12}>
+            <Grid
+              item
+              xs={12}
+              lg={description ? 5 : 4}
+              md={description ? 5 : 4}
+              sm={12}
+            >
               <Box
                 sx={{
                   maxHeight: "100px",
@@ -157,12 +175,12 @@ export const AssessmentSubjectAccordion = (
                   textAlign: "start",
                   width: "100%",
                   whiteSpace: "pre-wrap",
-                  wordBreak: "break-all",
                 }}
               >
                 <Typography
-                  variant="body2"
-                  color="rgba(157, 167, 179, 1)"
+                  variant="titleMedium"
+                  fontWeight={400}
+                  color="#243342"
                   sx={{ textTransform: "none", whiteSpace: "break-spaces" }}
                 >
                   {description}
@@ -170,54 +188,71 @@ export const AssessmentSubjectAccordion = (
               </Box>
             </Grid>
           )}
+
           {isMobileScreen && (
             <Grid item xs={12} lg={2} md={2} sm={12}>
               <SubjectStatus title={title} maturity_level={maturityLevel} />
             </Grid>
           )}
-          <Grid item xs={12} lg={3} md={3} sm={12}>
+          <Grid item xs={0} lg={0.2} md={0.2} sm={0}></Grid>
+          <Grid item xs={12} lg={1.7} md={1.7} sm={12}>
             <Box
               sx={{
                 ...styles.centerCVH,
                 gap: 2,
                 width: "100%",
-                mt: { xs: "-72px", sm: "-72px", md: "0" },
+                mt: { xs: "-52px", sm: "-52px", md: "0" },
               }}
             >
-              <Typography
-                fontWeight={500}
-                fontSize="1rem"
-                color="rgba(108, 123, 142, 1)"
-              >
-                <Trans i18nKey="confidenceLevel" />
+              <Typography variant="titleMedium" color="#243342">
+                <Trans i18nKey="withPercentConfidence" />
               </Typography>
-              <ConfidenceLevel inputNumber={confidenceValue} displayNumber />
+              <ConfidenceLevel
+                inputNumber={confidenceValue}
+                displayNumber
+                variant="titleLarge"
+              />
             </Box>
           </Grid>
           {!isMobileScreen && (
-            <Grid item xs={6} lg={2} md={2} sm={12}>
-              <SubjectStatus title={title} maturity_level={maturityLevel} />
+            <Grid item xs={6} lg={2.7} md={2.7} sm={12}>
+              <SubjectStatus
+                title={title}
+                maturity_level={maturityLevel}
+                maturityLevelCount={maturityLevelCount}
+              />
             </Grid>
           )}
+          <Grid item xs={12} lg={12} md={12} sm={12} mb={2}>
+            <Typography variant="titleMedium" fontWeight={400}>
+              <Trans
+                i18nKey="subjectAccordionDetails"
+                values={{
+                  attributes: subjectAttributes.length,
+                  subjects: title,
+                }}
+              />
+            </Typography>
+          </Grid>
         </Grid>
       </AccordionSummary>
       <AccordionDetails sx={{ padding: 0 }}>
-        <Grid container alignItems="center" padding={2}>
+        <Grid container alignItems="center" padding={4}>
           <Grid item xs={12} sm={12} md={12} lg={6.5}>
             <Box
               sx={{ display: { xs: "none", sm: "none", md: "block" } }}
-              height={"400px"}
+              height={subjectAttributes.length > 2 ? "400px" : "300px"}
             >
               {subjectAttributes.length > 2 ? (
                 <AssessmentSubjectRadarChart
                   data={subjectAttributes}
-                  maturityLevelsCount={5}
+                  maturityLevelsCount={maturityLevelCount ?? 5}
                   loading={false}
                 />
               ) : (
                 <AssessmentSubjectRadialChart
                   data={subjectAttributes}
-                  maturityLevelsCount={5}
+                  maturityLevelsCount={maturityLevelCount ?? 5}
                   loading={false}
                 />
               )}
@@ -226,32 +261,35 @@ export const AssessmentSubjectAccordion = (
           <Divider
             orientation="vertical"
             flexItem
-            sx={{ marginInline: { lg: 6 }, marginBlock: { lg: 10 } }}
+            sx={{ marginInline: { lg: 4 }, marginBlock: { lg: 10 } }}
           />
 
-          <Grid item xs={12} sm={12} md={12} lg={4}>
+          <Grid item xs={12} sm={12} md={12} lg={4.6}>
             <Box display="flex" flexDirection="column">
               <Box
                 display="flex"
                 justifyContent="space-between"
                 width="100%"
-                px={4}
+                px="2rem"
                 marginBottom="10px"
               >
-                <Typography fontWeight={500} color="#73808C">
+                <Typography variant="titleMedium" color="#73808C">
                   Attribute
                 </Typography>
-                <Typography fontWeight={500} color="#73808C">
+                <Typography variant="titleMedium" color="#73808C">
                   Status
                 </Typography>
               </Box>
               <Divider sx={{ width: "100%" }} />
               <Box
-                sx={{ ...styles.centerCV }}
                 maxHeight="400px"
                 overflow="auto"
                 gap="1.875rem"
-                marginTop="1.875rem"
+                paddingTop="1.875rem"
+                display="flex"
+                flexDirection="column"
+                paddingRight={2}
+                justifyContent="flex-start"
               >
                 {subjectAttributes.map((element: any) => {
                   return (
@@ -262,7 +300,7 @@ export const AssessmentSubjectAccordion = (
                       gap={1}
                       key={element.id}
                     >
-                      <Typography fontWeight={500} color="#243342">
+                      <Typography variant="titleMedium" color="#243342">
                         {element.title}
                       </Typography>
                       <Box display="flex" alignItems="center" gap={0.5}>
@@ -273,7 +311,7 @@ export const AssessmentSubjectAccordion = (
                               element.maturityLevel.value - 1
                               ],
                           }}
-                          fontWeight={500}
+                          variant="titleMedium"
                         >
                           {element.maturityLevel.title}
                         </Typography>
@@ -297,22 +335,19 @@ export const AssessmentSubjectAccordion = (
             component={Link}
             to={progress === 100 ? `./${id}#insight` : `./${id}`}
             sx={{
-              fontFamily: customFontFamily,
               borderRadius: 0,
               borderBottomRightRadius: "32px",
               borderBottomLeftRadius: "32px",
               padding: 2,
               textTransform: "none",
-              fontWeight: 700,
-              fontSize: "2rem",
-              backgroundColor: "#D0ECFF",
-              borderColor: "#D0ECFF",
+              backgroundColor: "#D0E4FF",
+              borderColor: "#D0E4FF",
               color: "#00365C",
-              letterSpacing: "0",
               "&:hover": {
-                backgroundColor: "#D0ECFF",
-                borderColor: "#D0ECFF",
+                backgroundColor: "#D0E4FF",
+                borderColor: "#D0E4FF",
               },
+              ...theme.typography.headlineMedium,
             }}
           >
             <Trans i18nKey={"checkMoreDetails"} />
@@ -324,9 +359,12 @@ export const AssessmentSubjectAccordion = (
 };
 
 const SubjectStatus = (
-  props: Pick<IAssessmentSubjectCardProps, "title" | "maturity_level">
+  props: Pick<
+    IAssessmentSubjectCardProps,
+    "title" | "maturity_level" | "maturityLevelCount"
+  >
 ) => {
-  const { title, maturity_level } = props;
+  const { title, maturity_level, maturityLevelCount } = props;
   const colorPallet = getMaturityLevelColors(maturity_level?.index ?? 0);
   const hasStats = maturity_level?.index ? true : false;
   const isMobileScreen = useMediaQuery((theme: any) =>
@@ -342,12 +380,14 @@ const SubjectStatus = (
       <Box>
         {hasStats ? (
           <Gauge
-            maturity_level_number={5}
+            maturity_level_number={maturityLevelCount ?? 5}
             isMobileScreen={isMobileScreen ? false : true}
             maturity_level_status={maturity_level?.title ?? ""}
             level_value={maturity_level?.index ?? 0}
             hideGuidance={true}
-            height={getNumberBaseOnScreen(240, 240, 200, 150, 150)}
+            height={getNumberBaseOnScreen(240, 240, 150, 150, 150)}
+            maturity_status_guide={t("subjectMaturityLevelIs")}
+            maturity_status_guide_variant="titleSmall"
           />
         ) : (
           <Typography>

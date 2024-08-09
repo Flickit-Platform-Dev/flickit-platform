@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import {
   AssessmentKitInfoType,
   ExpertGroupDetails,
-  AssessmentKitStatsExpertGroup,
+  IExpertGroup,
   IAssessmentKitReportModel,
   PathInfo,
 } from "@types";
@@ -22,7 +22,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { calculateFontSize } from "@/utils/calculateFontSize";
 interface IAssessmentSummaryProps {
   assessmentKit: IAssessmentKitReportModel;
-  expertGroup: AssessmentKitStatsExpertGroup;
+  expertGroup: IExpertGroup;
   data: any;
   progress: number;
   questionCount: number;
@@ -55,13 +55,12 @@ export const AssessmentSummary = (props: IAssessmentSummaryProps) => {
       sx={{
         background: "#fff",
         boxShadow: "0px 0px 8px 0px rgba(0, 0, 0, 0.25)",
-        borderRadius: "40px",
+        borderRadius: "32px",
         px: { xs: 2, sm: 3 },
         position: "relative",
       }}
       color="#004F83"
     >
-      <Actions assessmentId={assessmentId} manageable={manageable} />
       <Box sx={{ ...styles.centerCVH }} gap={1}>
         <Typography
           fontSize={calculateFontSize(assessmentKit?.title.length)}
@@ -74,11 +73,17 @@ export const AssessmentSummary = (props: IAssessmentSummaryProps) => {
           {assessmentKit?.title}
         </Typography>
       </Box>
-      <Box sx={{ ...styles.centerCVH }} width="80%">
+      <Box
+        sx={{ ...styles.centerCVH, textDecoration: "none", color: "inherit !important" }}
+        width={{ xl: "80%", lg: "90%", md: "90%", xs: "90%", sm: "90%" }}
+        component={Link}
+        to="./../questionnaires"
+      >
         <ColorfullProgress
           denominator={questionCount}
           numaratur={answerCount}
           type={ProgessBarTypes.Questioannaire}
+          progressHeight="24px"
         />
       </Box>
 
@@ -89,40 +94,52 @@ export const AssessmentSummary = (props: IAssessmentSummaryProps) => {
           textTransform: "none",
           backgroundColor: "#00365C",
           borderColor: "#00365C",
-          color: "#fff",
-          fontSize: "1.25rem",
-          py: "8px",
+          color: "#E1E3E5",
+          padding: "12px",
           boxShadow: "none",
           "&:hover": {
             backgroundColor: "#004F83",
             borderColor: "#004F83",
           },
-          width: "65%",
+          width: { xl: "50%", lg: "56%", md: "90%", xs: "90%", sm: "90%" },
         }}
         size="small"
         component={Link}
         to="./../questionnaires"
       >
-        <Trans i18nKey="Questionnaires" />
+        <Typography variant="titleLarge">
+          <Trans i18nKey="seeQuestionaires" />
+        </Typography>
       </Button>
       <Box
         sx={{ ...styles.centerV }}
         width="100%"
         justifyContent="space-evenly"
       >
-        <Box display="flex" flexDirection="column" textAlign={"center"}>
-          <Typography color="#243342" fontSize=".875rem" fontWeight={300}>
-            <Trans i18nKey="created" values={{ progress }} />{": "}
+        <Box
+          display="flex"
+          flexDirection="column"
+          textAlign={"center"}
+          gap=".5rem"
+        >
+          <Typography color="#243342" variant="bodyMedium">
+            <Trans i18nKey="created" values={{ progress }} />
+            {": "}
           </Typography>
-          <Typography color="#243342" fontWeight={500}>
+          <Typography color="#243342" variant="titleMedium">
             {convertToRelativeTime(creationTime)}
           </Typography>
         </Box>
-        <Box display="flex" flexDirection="column" textAlign={"center"}>
-          <Typography color="#243342" fontSize=".875rem" fontWeight={300}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          textAlign={"center"}
+          gap=".5rem"
+        >
+          <Typography color="#243342" variant="bodyMedium">
             <Trans i18nKey="updated" />:
           </Typography>
-          <Typography color="#243342" fontWeight={500}>
+          <Typography color="#243342" variant="titleMedium">
             {convertToRelativeTime(lastModificationTime)}
           </Typography>
         </Box>
@@ -138,7 +155,7 @@ const Actions = (props: { assessmentId: string; manageable: boolean }) => {
 
   const assessmentSetting = (e: any) => {
     navigate({
-      pathname: `/${spaceId}/assessments/1/assessmentsettings/${assessmentId}`,
+      pathname: `/${spaceId}/assessments/1/${assessmentId}/assessment-settings/`,
     });
   };
   return (

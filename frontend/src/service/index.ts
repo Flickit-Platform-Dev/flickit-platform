@@ -60,11 +60,14 @@ export const createService = (
       return axios.post(`/authinfo/users/`, data, config);
     },
     getSignedInUser(arg: any, config: AxiosRequestConfig<any> | undefined) {
-      return axios.get(`/authinfo/users/me/`, config);
+      return axios.get(`/api/v1/users/me/`, config);
+    },
+    getUserProfile(arg: any, config: AxiosRequestConfig<any> | undefined) {
+      return axios.get(`/api/v1/user-profile/`, config);
     },
     updateUserInfo(args: any, config: AxiosRequestConfig<any> | undefined) {
       const { data, id } = args ?? {};
-      return axios.put(`/authinfo/users/${id}/`, data, {
+      return axios.put(`/api/v1/user-profile/`, data, {
         ...config,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -121,6 +124,33 @@ export const createService = (
         config
       );
     },
+    inviteMemberToAssessment(
+      args: { assessmentId: any; email: any; roleId: any },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      const { assessmentId, email, roleId } = args ?? {};
+
+      return axios.post(
+        `/api/v1/assessments/${assessmentId}/invite/`,
+        { email, roleId },
+        {
+          ...(config ?? {}),
+        }
+      );
+    },
+    fetchAssessmentMembersInvitees(
+      { assessmentId }: { assessmentId: string },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      return axios.get(`/api/v1/assessments/${assessmentId}/invitees/`, config);
+    },
+    loadUserByEmail(
+      args: { email: string },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      const { email } = args ?? {};
+      return axios.get(`/api/v1/users/email/${email}/`, config);
+    },
     setCurrentSpace(
       { spaceId }: { spaceId: string | number },
       config: AxiosRequestConfig<any> | undefined
@@ -137,13 +167,10 @@ export const createService = (
       );
     },
     deleteSpaceInvite(
-          { inviteId }: { inviteId: string },
-           config: AxiosRequestConfig<any> | undefined
-      ) {
-          return axios.delete(
-        `/api/v1/space-invitations/${inviteId}/`,
-              config
-       );
+      { inviteId }: { inviteId: string },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      return axios.delete(`/api/v1/space-invitations/${inviteId}/`, config);
     },
     fetchSpaceMembers(
       { spaceId }: { spaceId: string },
@@ -287,6 +314,31 @@ export const createService = (
         ...(config ?? {}),
       });
     },
+    fetchExportReport(
+      { assessmentId, attributeId }: { assessmentId: string; attributeId: TId },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      return axios.post(
+        `/api/v1/assessments/${assessmentId}/export-report/attributes/${attributeId}/`,
+        {
+          ...(config ?? {}),
+        }
+      );
+    },
+    fetchAIReport(
+      {
+        assessmentId,
+        attributeId,
+        data,
+      }: { assessmentId: string; attributeId: TId; data: any },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      return axios.post(
+        `/api/v1/assessments/${assessmentId}/ai-report/attributes/${attributeId}/`,
+        data,
+        config
+      );
+    },
     fetchAssessment(
       { assessmentId }: { assessmentId: string },
       config: AxiosRequestConfig<any> | undefined
@@ -398,6 +450,31 @@ export const createService = (
     ) {
       return axios.get(
         `/api/v1/assessments/${assessmentId}/questionnaires/${questionnaireId}/`,
+        {
+          ...(config ?? {}),
+          params: {
+            page: page,
+            size: size,
+          },
+        }
+      );
+    },
+    fetchAnswersHistory(
+      {
+        questionId,
+        assessmentId,
+        page,
+        size,
+      }: {
+        questionId: TId;
+        assessmentId: TId;
+        size: number;
+        page: number;
+      },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      return axios.get(
+        `/api/v1/assessments/${assessmentId}/questions/${questionId}/answer-history/`,
         {
           ...(config ?? {}),
           params: {
@@ -558,13 +635,13 @@ export const createService = (
       );
     },
     uploadAssessmentKitDSLFile(
-      args: { file: any; expert_group_id?: TId },
+      args: { file: any; expertGroupId?: TId },
       config: AxiosRequestConfig<any> | undefined
     ) {
-      const { file, expert_group_id } = args ?? {};
+      const { file, expertGroupId } = args ?? {};
       return axios.post(
         `/api/v1/assessment-kits/upload-dsl/`,
-        { dsl_file: file, expert_group_id: expert_group_id },
+        { dslFile: file, expertGroupId: expertGroupId },
         {
           ...config,
           headers: {
@@ -881,8 +958,10 @@ export const createService = (
 
       return axios.post(`/api/v1/expert-groups/`, data, {
         ...(config ?? {}),
+        responseType: "blob",
         headers: {
           "Content-Type": "multipart/form-data",
+
         },
       });
     },
@@ -918,6 +997,16 @@ export const createService = (
     ) {
       const { id } = args ?? {};
       return axios.delete(`/api/v1/expert-groups/${id}/`, config);
+    },
+    deleteExpertGroupImage(
+      args: { expertGroupId: number },
+      config: AxiosRequestConfig<any> | undefined
+    ) {
+      const { expertGroupId } = args ?? {};
+
+      return axios.delete(`/api/v1/expert-groups/${expertGroupId}/picture/`, {
+        ...(config ?? {}),
+      });
     },
     seenExpertGroup(
       args: { id: TId },
@@ -1048,6 +1137,38 @@ export const createService = (
         },
       });
     },
+    fetchEvidenceAttachments(
+        args: {evidence_id:string },
+        config: AxiosRequestConfig<any> | undefined
+    ) {
+        const { evidence_id } = args ?? {};
+
+        return axios.get(`/api/v1/evidences/${evidence_id}/attachments/`, {
+            ...(config ?? {}),
+        });
+    },
+      addEvidenceAttachments(
+          args: {evidenceId: 'string', data: {}},
+          config: AxiosRequestConfig<any> | undefined
+      ) {
+          const { evidenceId, data} = args ?? {};
+          return axios.post(`/api/v1/evidences/${evidenceId}/attachments/`, data,{
+              ...(config ?? {}),
+              responseType: "blob",
+              headers: {
+                  "Content-Type": "multipart/form-data",
+              }
+          });
+      },
+      RemoveEvidenceAttachments(
+          args: {evidenceId: string, attachmentId: string},
+          config: AxiosRequestConfig<any> | undefined
+      ) {
+          const { evidenceId, attachmentId} = args ?? {};
+          return axios.delete(`/api/v1/evidences/${evidenceId}/attachments/${attachmentId}/`,{
+              ...(config ?? {}),
+          });
+      },
     fetchConfidenceLevelsList(
       args: {},
       config: AxiosRequestConfig<any> | undefined

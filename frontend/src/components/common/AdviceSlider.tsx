@@ -43,9 +43,7 @@ const AdviceSlider = (props: any) => {
       }
     }
   };
-  const colorPallet = getMaturityLevelColors(
-    subject?.maturity_level?.maturity_levels_count ?? 5
-  );
+  const colorPallet = getMaturityLevelColors(maturityLevels?.length ?? 5);
   return (
     <Box
       sx={{
@@ -96,7 +94,7 @@ const AdviceSlider = (props: any) => {
           <Slider
             defaultValue={defaultValue}
             min={1}
-            max={subject?.maturity_level?.maturity_levels_count ?? 5}
+            max={maturityLevels?.length ? maturityLevels?.length : 5}
             onChange={handleSliderChange}
             value={value}
             marks
@@ -129,7 +127,13 @@ const AdviceSlider = (props: any) => {
           mr={"4%"}
           mt={"-10px"}
         >
-          <Box position={"relative"} left={`${(defaultValue - 1) * 25}%`}>
+          <Box
+            position={"relative"}
+            left={`${
+              ((defaultValue - 1) * 99) /
+              (maturityLevels?.length ? maturityLevels?.length - 1 : 4)
+            }%`}
+          >
             <svg
               width="20"
               height="9"
@@ -143,7 +147,10 @@ const AdviceSlider = (props: any) => {
           <Box
             sx={{
               position: "relative",
-              left: `${(defaultValue - 1) * 25}%`,
+              left: `${
+                ((defaultValue - 1) * 99) /
+                (maturityLevels?.length ? maturityLevels?.length - 1 : 4)
+              }%`,
               ml: "-25px",
               mt: "-5px",
               whiteSpace: "nowrap",
