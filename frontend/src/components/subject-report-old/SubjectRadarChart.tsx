@@ -72,8 +72,8 @@ const SubjectRadar = (props: any) => {
         <Radar
           name={t("maturityLevel") as string}
           dataKey="ml"
-          stroke="#1CC2C4"
-          fill="#1CC2C4"
+          stroke="#003B64"
+          fill="#003B64"
           fillOpacity={0.5}
         />
         <Legend wrapperStyle={{ paddingTop: 20 }} />{" "}

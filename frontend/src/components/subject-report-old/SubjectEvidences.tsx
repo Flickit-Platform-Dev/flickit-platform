@@ -94,7 +94,7 @@ const RelatedEvidencesContainer: React.FC<RelatedEvidencesContainerProps> = ({
     >
       <Typography
         variant="h5"
-        color={type === evidenceType.positive ? "#1CC2C4" : "#D81E5B"}
+        color={type === evidenceType.positive ? "#003B64" : "#D81E5B"}
       >
         <Trans
           i18nKey={
@@ -125,7 +125,7 @@ const RelatedEvidencesContainer: React.FC<RelatedEvidencesContainerProps> = ({
             number={index + 1}
             item={item}
             color={type === evidenceType.positive ? "#A4E7E7" : "#EFA5BD"}
-            textColor={type === evidenceType.positive ? "#1CC2C4" : "#D81E5B"}
+            textColor={type === evidenceType.positive ? "#003B64" : "#D81E5B"}
           />
         ))}
       </Box>

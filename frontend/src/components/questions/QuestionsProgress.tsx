@@ -122,7 +122,7 @@ export const QuestionProgressItem = (props: any) => {
           `${
               question?.answer?.selectedOption || question?.answer?.isNotApplicable
               ? t.palette.primary.main
-              : "#D2F3F3"
+              : "#D0E4FF"
           } solid 5px`,
         transition: "background-color .3s ease, transform .2s ease",
         borderRadius: "8px",

@@ -296,11 +296,6 @@ export const theme = createTheme({
         },
       },
     },
-    MuiButtonGroup: {
-      defaultProps: {
-        color: "primary"
-      },
-    },
     MuiTabs: {
       styleOverrides: {
         root: {
