@@ -125,86 +125,6 @@ export const theme = createTheme({
   typography: {
     fontFamily: customFontFamily,
     headlineSmall: {
-      fontFamily: secondaryFontFamily,
-      fontSize: '1.5rem',
-      lineHeight: "2rem"
-    },
-    headlineMedium: {
-      fontFamily: secondaryFontFamily,
-      fontSize: '1.75rem',
-      lineHeight: "2.25rem"
-    },
-    headlineLarge: {
-      fontFamily: secondaryFontFamily,
-      fontWeight: 'Bold',
-      fontSize: '4.5rem',
-      lineHeight: "5.75rem"
-    },
-    displaySmall: {
-      fontSize: '1.5rem',
-      lineHeight: "2rem",
-      letterSpacing: "-3%"
-    },
-    displayMedium: {
-      fontSize: '2rem',
-      fontWeight: 'Bold',
-      lineHeight: "2.25rem"
-    },
-    displayLarge: {
-      fontSize: '4rem',
-      fontWeight: 'Bold',
-      lineHeight: "4.25rem",
-    },
-    titleSmall: {
-      fontSize: '0.875rem',
-      lineHeight: "1.25rem",
-      letterSpacing: ".1px"
-
-    },
-    titleMedium: {
-      fontSize: '1rem',
-      lineHeight: "1.5rem",
-      letterSpacing: ".15px"
-    },
-    titleLarge: {
-      fontSize: '1.375rem',
-      lineHeight: "1.75rem"
-    },
-    bodySmall: {
-      fontWeight: 'lighter',
-      fontSize: '0.75rem',
-      lineHeight: "1rem",
-      letterSpacing: "0.4px"
-    },
-    bodyMedium: {
-      fontWeight: 'lighter',
-      fontSize: '0.875rem',
-      lineHeight: "1.125rem",
-      letterSpacing: "0.25px"
-    },
-    bodyLarge: {
-      fontSize: '1rem',
-      lineHeight: "1.5rem",
-      letterSpacing: "0.5px"
-    },
-    labelSmall: {
-      fontFamily: secondaryFontFamily,
-      fontSize: '0.6875rem',
-      lineHeight: "0.75rem",
-      letterSpacing: '0.5px',
-    },
-    labelMedium: {
-      fontSize: '0.75rem',
-      lineHeight: "1rem",
-      letterSpacing: '0.5px',
-    },
-    labelLarge: {
-      fontWeight: 'Bold',
-      fontSize: '0.875rem',
-      lineHeight: "1.125rem",
-      letterSpacing: "0.1px"
-    },
-    headlineSmall: {
       fontFamily: primaryFontFamily,
       fontWeight: 500,
       fontSize: "1.5rem",
@@ -412,8 +332,6 @@ export const theme = createTheme({
         },
       },
     },
-
-
     //@ts-expect-error
     MuiTabPanel: {
       styleOverrides: {
